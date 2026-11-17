@@ -1,0 +1,67 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": [
+      "ES2022"
+    ],
+    "skipLibCheck": true,
+    "types": [
+      "node"
+    ],
+    "allowJs": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "noEmit": false,
+    "outDir": "./dist-server",
+    "isolatedModules": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "exactOptionalPropertyTypes": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitUseStrict": false,
+    "sourceMap": true,
+    "declaration": false
+  },
+  "include": [
+    "server.ts",
+    "middleware/**/*.ts",
+    "middleware/**/*.js",
+    "routes/**/*.ts",
+    "utils/**/*.ts",
+    "utils/**/*.js",
+    "types/**/*.ts",
+    "services/**/*.ts",
+    "services/**/*.js",
+    "components/types.ts",
+    "lib/validation.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "index.tsx",
+    "App.tsx",
+    "components/**/*.tsx",
+    "pages/**/*.tsx",
+    "contexts/**/*.tsx"
+  ],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  }
+}

@@ -1,0 +1,4215 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API documentation for 54182_scraft_crm_database",
+    "version": "1.0.0",
+    "description": "API documentation for 54182_scraft_crm_database"
+  },
+  "servers": [
+    {
+      "url": "https://api.nocodebackend.com"
+    }
+  ],
+  "paths": {
+    "/create/lead_activities?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Create a new record in lead_activities",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lead_id": {
+                    "type": "integer"
+                  },
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully created the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Record created successfully"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "ID of the newly created record"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/lead_activities?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve all records from lead_activities",
+        "description": "### Filtering and query options\n\nUse query parameters to filter results. Operators use bracket notation:\n\n| Operator | Example | Meaning |\n|---|---|---|\n| `field` | `?status=active` | Equal (default) |\n| `field[ne]` | `?status[ne]=inactive` | Not equal |\n| `field[gt]` | `?price[gt]=100` | Greater than |\n| `field[gte]` | `?date[gte]=2024-05-01` | Greater than or equal |\n| `field[lt]` | `?score[lt]=500` | Less than |\n| `field[lte]` | `?score[lte]=800` | Less than or equal |\n| `field[in]` | `?type[in]=a,b,c` | In list (comma-separated) |\n| `field[like]` | `?name[like]=john` | Partial match |\n\n**Examples**\n- `?price[gte]=100&price[lte]=200`\n- `?name[like]=john`\n- `?status=active`\n\n**Additional helpers**\n- **Pagination**: `page`, `limit` (defaults 1, 10)\n- **Totals**: `includeTotal=true` adds `total` and `totalPages`\n- **Sorting**: `sort=colA,colB`, `order=asc,desc`\n- **Single record**: `only=latest` or `only=oldest` (optional `by=column`, defaults `id`)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "lead_id": {
+                            "type": "integer"
+                          },
+                          "workspace_id": {
+                            "type": "integer"
+                          },
+                          "user_id": {
+                            "type": "integer"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "metadata": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/lead_activities/{id}?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve a record by ID from lead_activities",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to retrieve"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "lead_id": {
+                          "type": "integer"
+                        },
+                        "workspace_id": {
+                          "type": "integer"
+                        },
+                        "user_id": {
+                          "type": "integer"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "metadata": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-01-01 00:00:00"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/search/lead_activities?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Search for records in lead_activities",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lead_id": {
+                    "type": "integer"
+                  },
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved matching records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "lead_id": {
+                            "type": "integer"
+                          },
+                          "workspace_id": {
+                            "type": "integer"
+                          },
+                          "user_id": {
+                            "type": "integer"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "metadata": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/update/lead_activities/{id}?Instance=54182_scraft_crm_database": {
+      "put": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Update a record in lead_activities",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lead_id": {
+                    "type": "integer"
+                  },
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully updated the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/delete/lead_activities/{id}?Instance=54182_scraft_crm_database": {
+      "delete": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Delete a record from lead_activities",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to delete"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/create/lead_custom_field_values?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Create a new record in lead_custom_field_values",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lead_id": {
+                    "type": "integer"
+                  },
+                  "field_id": {
+                    "type": "integer"
+                  },
+                  "value": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully created the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Record created successfully"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "ID of the newly created record"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/lead_custom_field_values?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve all records from lead_custom_field_values",
+        "description": "### Filtering and query options\n\nUse query parameters to filter results. Operators use bracket notation:\n\n| Operator | Example | Meaning |\n|---|---|---|\n| `field` | `?status=active` | Equal (default) |\n| `field[ne]` | `?status[ne]=inactive` | Not equal |\n| `field[gt]` | `?price[gt]=100` | Greater than |\n| `field[gte]` | `?date[gte]=2024-05-01` | Greater than or equal |\n| `field[lt]` | `?score[lt]=500` | Less than |\n| `field[lte]` | `?score[lte]=800` | Less than or equal |\n| `field[in]` | `?type[in]=a,b,c` | In list (comma-separated) |\n| `field[like]` | `?name[like]=john` | Partial match |\n\n**Examples**\n- `?price[gte]=100&price[lte]=200`\n- `?name[like]=john`\n- `?status=active`\n\n**Additional helpers**\n- **Pagination**: `page`, `limit` (defaults 1, 10)\n- **Totals**: `includeTotal=true` adds `total` and `totalPages`\n- **Sorting**: `sort=colA,colB`, `order=asc,desc`\n- **Single record**: `only=latest` or `only=oldest` (optional `by=column`, defaults `id`)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "lead_id": {
+                            "type": "integer"
+                          },
+                          "field_id": {
+                            "type": "integer"
+                          },
+                          "value": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/lead_custom_field_values/{id}?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve a record by ID from lead_custom_field_values",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to retrieve"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "lead_id": {
+                          "type": "integer"
+                        },
+                        "field_id": {
+                          "type": "integer"
+                        },
+                        "value": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-01-01 00:00:00"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/search/lead_custom_field_values?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Search for records in lead_custom_field_values",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lead_id": {
+                    "type": "integer"
+                  },
+                  "field_id": {
+                    "type": "integer"
+                  },
+                  "value": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved matching records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "lead_id": {
+                            "type": "integer"
+                          },
+                          "field_id": {
+                            "type": "integer"
+                          },
+                          "value": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/update/lead_custom_field_values/{id}?Instance=54182_scraft_crm_database": {
+      "put": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Update a record in lead_custom_field_values",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lead_id": {
+                    "type": "integer"
+                  },
+                  "field_id": {
+                    "type": "integer"
+                  },
+                  "value": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully updated the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/delete/lead_custom_field_values/{id}?Instance=54182_scraft_crm_database": {
+      "delete": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Delete a record from lead_custom_field_values",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to delete"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/create/lead_custom_fields?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Create a new record in lead_custom_fields",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "field_type": {
+                    "type": "string"
+                  },
+                  "options": {
+                    "type": "string"
+                  },
+                  "is_required": {
+                    "type": "integer"
+                  },
+                  "is_active": {
+                    "type": "integer"
+                  },
+                  "sort_order": {
+                    "type": "integer"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully created the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Record created successfully"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "ID of the newly created record"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/lead_custom_fields?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve all records from lead_custom_fields",
+        "description": "### Filtering and query options\n\nUse query parameters to filter results. Operators use bracket notation:\n\n| Operator | Example | Meaning |\n|---|---|---|\n| `field` | `?status=active` | Equal (default) |\n| `field[ne]` | `?status[ne]=inactive` | Not equal |\n| `field[gt]` | `?price[gt]=100` | Greater than |\n| `field[gte]` | `?date[gte]=2024-05-01` | Greater than or equal |\n| `field[lt]` | `?score[lt]=500` | Less than |\n| `field[lte]` | `?score[lte]=800` | Less than or equal |\n| `field[in]` | `?type[in]=a,b,c` | In list (comma-separated) |\n| `field[like]` | `?name[like]=john` | Partial match |\n\n**Examples**\n- `?price[gte]=100&price[lte]=200`\n- `?name[like]=john`\n- `?status=active`\n\n**Additional helpers**\n- **Pagination**: `page`, `limit` (defaults 1, 10)\n- **Totals**: `includeTotal=true` adds `total` and `totalPages`\n- **Sorting**: `sort=colA,colB`, `order=asc,desc`\n- **Single record**: `only=latest` or `only=oldest` (optional `by=column`, defaults `id`)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workspace_id": {
+                            "type": "integer"
+                          },
+                          "label": {
+                            "type": "string"
+                          },
+                          "slug": {
+                            "type": "string"
+                          },
+                          "field_type": {
+                            "type": "string"
+                          },
+                          "options": {
+                            "type": "string"
+                          },
+                          "is_required": {
+                            "type": "integer"
+                          },
+                          "is_active": {
+                            "type": "integer"
+                          },
+                          "sort_order": {
+                            "type": "integer"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/lead_custom_fields/{id}?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve a record by ID from lead_custom_fields",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to retrieve"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "workspace_id": {
+                          "type": "integer"
+                        },
+                        "label": {
+                          "type": "string"
+                        },
+                        "slug": {
+                          "type": "string"
+                        },
+                        "field_type": {
+                          "type": "string"
+                        },
+                        "options": {
+                          "type": "string"
+                        },
+                        "is_required": {
+                          "type": "integer"
+                        },
+                        "is_active": {
+                          "type": "integer"
+                        },
+                        "sort_order": {
+                          "type": "integer"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-01-01 00:00:00"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/search/lead_custom_fields?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Search for records in lead_custom_fields",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "field_type": {
+                    "type": "string"
+                  },
+                  "options": {
+                    "type": "string"
+                  },
+                  "is_required": {
+                    "type": "integer"
+                  },
+                  "is_active": {
+                    "type": "integer"
+                  },
+                  "sort_order": {
+                    "type": "integer"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved matching records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workspace_id": {
+                            "type": "integer"
+                          },
+                          "label": {
+                            "type": "string"
+                          },
+                          "slug": {
+                            "type": "string"
+                          },
+                          "field_type": {
+                            "type": "string"
+                          },
+                          "options": {
+                            "type": "string"
+                          },
+                          "is_required": {
+                            "type": "integer"
+                          },
+                          "is_active": {
+                            "type": "integer"
+                          },
+                          "sort_order": {
+                            "type": "integer"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/update/lead_custom_fields/{id}?Instance=54182_scraft_crm_database": {
+      "put": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Update a record in lead_custom_fields",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "field_type": {
+                    "type": "string"
+                  },
+                  "options": {
+                    "type": "string"
+                  },
+                  "is_required": {
+                    "type": "integer"
+                  },
+                  "is_active": {
+                    "type": "integer"
+                  },
+                  "sort_order": {
+                    "type": "integer"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully updated the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/delete/lead_custom_fields/{id}?Instance=54182_scraft_crm_database": {
+      "delete": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Delete a record from lead_custom_fields",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to delete"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/create/lead_statuses?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Create a new record in lead_statuses",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  },
+                  "order_index": {
+                    "type": "integer"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "closed_won",
+                      "closed_lost"
+                    ],
+                    "description": "dropdown: choose one of [open, closed_won, closed_lost]"
+                  },
+                  "is_default": {
+                    "type": "integer"
+                  },
+                  "is_active": {
+                    "type": "integer"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  },
+                  "updated_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully created the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Record created successfully"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "ID of the newly created record"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/lead_statuses?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve all records from lead_statuses",
+        "description": "### Filtering and query options\n\nUse query parameters to filter results. Operators use bracket notation:\n\n| Operator | Example | Meaning |\n|---|---|---|\n| `field` | `?status=active` | Equal (default) |\n| `field[ne]` | `?status[ne]=inactive` | Not equal |\n| `field[gt]` | `?price[gt]=100` | Greater than |\n| `field[gte]` | `?date[gte]=2024-05-01` | Greater than or equal |\n| `field[lt]` | `?score[lt]=500` | Less than |\n| `field[lte]` | `?score[lte]=800` | Less than or equal |\n| `field[in]` | `?type[in]=a,b,c` | In list (comma-separated) |\n| `field[like]` | `?name[like]=john` | Partial match |\n\n**Examples**\n- `?price[gte]=100&price[lte]=200`\n- `?name[like]=john`\n- `?status=active`\n\n**Additional helpers**\n- **Pagination**: `page`, `limit` (defaults 1, 10)\n- **Totals**: `includeTotal=true` adds `total` and `totalPages`\n- **Sorting**: `sort=colA,colB`, `order=asc,desc`\n- **Single record**: `only=latest` or `only=oldest` (optional `by=column`, defaults `id`)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workspace_id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "slug": {
+                            "type": "string"
+                          },
+                          "color": {
+                            "type": "string"
+                          },
+                          "order_index": {
+                            "type": "integer"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "open",
+                              "closed_won",
+                              "closed_lost"
+                            ],
+                            "description": "dropdown: choose one of [open, closed_won, closed_lost]"
+                          },
+                          "is_default": {
+                            "type": "integer"
+                          },
+                          "is_active": {
+                            "type": "integer"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/lead_statuses/{id}?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve a record by ID from lead_statuses",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to retrieve"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "workspace_id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "slug": {
+                          "type": "string"
+                        },
+                        "color": {
+                          "type": "string"
+                        },
+                        "order_index": {
+                          "type": "integer"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "open",
+                            "closed_won",
+                            "closed_lost"
+                          ],
+                          "description": "dropdown: choose one of [open, closed_won, closed_lost]"
+                        },
+                        "is_default": {
+                          "type": "integer"
+                        },
+                        "is_active": {
+                          "type": "integer"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-01-01 00:00:00"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-01-01 00:00:00"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/search/lead_statuses?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Search for records in lead_statuses",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  },
+                  "order_index": {
+                    "type": "integer"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "closed_won",
+                      "closed_lost"
+                    ],
+                    "description": "dropdown: choose one of [open, closed_won, closed_lost]"
+                  },
+                  "is_default": {
+                    "type": "integer"
+                  },
+                  "is_active": {
+                    "type": "integer"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  },
+                  "updated_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved matching records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workspace_id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "slug": {
+                            "type": "string"
+                          },
+                          "color": {
+                            "type": "string"
+                          },
+                          "order_index": {
+                            "type": "integer"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "open",
+                              "closed_won",
+                              "closed_lost"
+                            ],
+                            "description": "dropdown: choose one of [open, closed_won, closed_lost]"
+                          },
+                          "is_default": {
+                            "type": "integer"
+                          },
+                          "is_active": {
+                            "type": "integer"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/update/lead_statuses/{id}?Instance=54182_scraft_crm_database": {
+      "put": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Update a record in lead_statuses",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  },
+                  "order_index": {
+                    "type": "integer"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "closed_won",
+                      "closed_lost"
+                    ],
+                    "description": "dropdown: choose one of [open, closed_won, closed_lost]"
+                  },
+                  "is_default": {
+                    "type": "integer"
+                  },
+                  "is_active": {
+                    "type": "integer"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  },
+                  "updated_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully updated the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/delete/lead_statuses/{id}?Instance=54182_scraft_crm_database": {
+      "delete": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Delete a record from lead_statuses",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to delete"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/create/lead_webhook_logs?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Create a new record in lead_webhook_logs",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "lead_id": {
+                    "type": "integer"
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "event_id": {
+                    "type": "string"
+                  },
+                  "payload": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "error": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully created the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Record created successfully"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "ID of the newly created record"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/lead_webhook_logs?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve all records from lead_webhook_logs",
+        "description": "### Filtering and query options\n\nUse query parameters to filter results. Operators use bracket notation:\n\n| Operator | Example | Meaning |\n|---|---|---|\n| `field` | `?status=active` | Equal (default) |\n| `field[ne]` | `?status[ne]=inactive` | Not equal |\n| `field[gt]` | `?price[gt]=100` | Greater than |\n| `field[gte]` | `?date[gte]=2024-05-01` | Greater than or equal |\n| `field[lt]` | `?score[lt]=500` | Less than |\n| `field[lte]` | `?score[lte]=800` | Less than or equal |\n| `field[in]` | `?type[in]=a,b,c` | In list (comma-separated) |\n| `field[like]` | `?name[like]=john` | Partial match |\n\n**Examples**\n- `?price[gte]=100&price[lte]=200`\n- `?name[like]=john`\n- `?status=active`\n\n**Additional helpers**\n- **Pagination**: `page`, `limit` (defaults 1, 10)\n- **Totals**: `includeTotal=true` adds `total` and `totalPages`\n- **Sorting**: `sort=colA,colB`, `order=asc,desc`\n- **Single record**: `only=latest` or `only=oldest` (optional `by=column`, defaults `id`)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workspace_id": {
+                            "type": "integer"
+                          },
+                          "lead_id": {
+                            "type": "integer"
+                          },
+                          "source": {
+                            "type": "string"
+                          },
+                          "event_id": {
+                            "type": "string"
+                          },
+                          "payload": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "error": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/lead_webhook_logs/{id}?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve a record by ID from lead_webhook_logs",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to retrieve"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "workspace_id": {
+                          "type": "integer"
+                        },
+                        "lead_id": {
+                          "type": "integer"
+                        },
+                        "source": {
+                          "type": "string"
+                        },
+                        "event_id": {
+                          "type": "string"
+                        },
+                        "payload": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "error": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-01-01 00:00:00"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/search/lead_webhook_logs?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Search for records in lead_webhook_logs",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "lead_id": {
+                    "type": "integer"
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "event_id": {
+                    "type": "string"
+                  },
+                  "payload": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "error": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved matching records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workspace_id": {
+                            "type": "integer"
+                          },
+                          "lead_id": {
+                            "type": "integer"
+                          },
+                          "source": {
+                            "type": "string"
+                          },
+                          "event_id": {
+                            "type": "string"
+                          },
+                          "payload": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "error": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/update/lead_webhook_logs/{id}?Instance=54182_scraft_crm_database": {
+      "put": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Update a record in lead_webhook_logs",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "lead_id": {
+                    "type": "integer"
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "event_id": {
+                    "type": "string"
+                  },
+                  "payload": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "error": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully updated the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/delete/lead_webhook_logs/{id}?Instance=54182_scraft_crm_database": {
+      "delete": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Delete a record from lead_webhook_logs",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to delete"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/create/leads?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Create a new record in leads",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "status_id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "source_ref": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  },
+                  "updated_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  },
+                  "email_valid": {
+                    "type": "integer"
+                  },
+                  "phone_valid": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully created the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Record created successfully"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "ID of the newly created record"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/leads?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve all records from leads",
+        "description": "### Filtering and query options\n\nUse query parameters to filter results. Operators use bracket notation:\n\n| Operator | Example | Meaning |\n|---|---|---|\n| `field` | `?status=active` | Equal (default) |\n| `field[ne]` | `?status[ne]=inactive` | Not equal |\n| `field[gt]` | `?price[gt]=100` | Greater than |\n| `field[gte]` | `?date[gte]=2024-05-01` | Greater than or equal |\n| `field[lt]` | `?score[lt]=500` | Less than |\n| `field[lte]` | `?score[lte]=800` | Less than or equal |\n| `field[in]` | `?type[in]=a,b,c` | In list (comma-separated) |\n| `field[like]` | `?name[like]=john` | Partial match |\n\n**Examples**\n- `?price[gte]=100&price[lte]=200`\n- `?name[like]=john`\n- `?status=active`\n\n**Additional helpers**\n- **Pagination**: `page`, `limit` (defaults 1, 10)\n- **Totals**: `includeTotal=true` adds `total` and `totalPages`\n- **Sorting**: `sort=colA,colB`, `order=asc,desc`\n- **Single record**: `only=latest` or `only=oldest` (optional `by=column`, defaults `id`)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workspace_id": {
+                            "type": "integer"
+                          },
+                          "status_id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "phone": {
+                            "type": "string"
+                          },
+                          "source": {
+                            "type": "string"
+                          },
+                          "source_ref": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          },
+                          "email_valid": {
+                            "type": "integer"
+                          },
+                          "phone_valid": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/leads/{id}?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve a record by ID from leads",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to retrieve"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "workspace_id": {
+                          "type": "integer"
+                        },
+                        "status_id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "phone": {
+                          "type": "string"
+                        },
+                        "source": {
+                          "type": "string"
+                        },
+                        "source_ref": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-01-01 00:00:00"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-01-01 00:00:00"
+                        },
+                        "email_valid": {
+                          "type": "integer"
+                        },
+                        "phone_valid": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/search/leads?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Search for records in leads",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "status_id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "source_ref": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  },
+                  "updated_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  },
+                  "email_valid": {
+                    "type": "integer"
+                  },
+                  "phone_valid": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved matching records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workspace_id": {
+                            "type": "integer"
+                          },
+                          "status_id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "phone": {
+                            "type": "string"
+                          },
+                          "source": {
+                            "type": "string"
+                          },
+                          "source_ref": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          },
+                          "email_valid": {
+                            "type": "integer"
+                          },
+                          "phone_valid": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/update/leads/{id}?Instance=54182_scraft_crm_database": {
+      "put": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Update a record in leads",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "status_id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "string"
+                  },
+                  "source_ref": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  },
+                  "updated_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  },
+                  "email_valid": {
+                    "type": "integer"
+                  },
+                  "phone_valid": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully updated the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/delete/leads/{id}?Instance=54182_scraft_crm_database": {
+      "delete": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Delete a record from leads",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to delete"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/create/users?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Create a new record in users",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully created the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Record created successfully"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "ID of the newly created record"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/users?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve all records from users",
+        "description": "### Filtering and query options\n\nUse query parameters to filter results. Operators use bracket notation:\n\n| Operator | Example | Meaning |\n|---|---|---|\n| `field` | `?status=active` | Equal (default) |\n| `field[ne]` | `?status[ne]=inactive` | Not equal |\n| `field[gt]` | `?price[gt]=100` | Greater than |\n| `field[gte]` | `?date[gte]=2024-05-01` | Greater than or equal |\n| `field[lt]` | `?score[lt]=500` | Less than |\n| `field[lte]` | `?score[lte]=800` | Less than or equal |\n| `field[in]` | `?type[in]=a,b,c` | In list (comma-separated) |\n| `field[like]` | `?name[like]=john` | Partial match |\n\n**Examples**\n- `?price[gte]=100&price[lte]=200`\n- `?name[like]=john`\n- `?status=active`\n\n**Additional helpers**\n- **Pagination**: `page`, `limit` (defaults 1, 10)\n- **Totals**: `includeTotal=true` adds `total` and `totalPages`\n- **Sorting**: `sort=colA,colB`, `order=asc,desc`\n- **Single record**: `only=latest` or `only=oldest` (optional `by=column`, defaults `id`)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "password": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/users/{id}?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve a record by ID from users",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to retrieve"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "password": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-01-01 00:00:00"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/search/users?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Search for records in users",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved matching records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "password": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/update/users/{id}?Instance=54182_scraft_crm_database": {
+      "put": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Update a record in users",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully updated the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/delete/users/{id}?Instance=54182_scraft_crm_database": {
+      "delete": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Delete a record from users",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to delete"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/create/workspace_members?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Create a new record in workspace_members",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "role": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully created the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Record created successfully"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "ID of the newly created record"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/workspace_members?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve all records from workspace_members",
+        "description": "### Filtering and query options\n\nUse query parameters to filter results. Operators use bracket notation:\n\n| Operator | Example | Meaning |\n|---|---|---|\n| `field` | `?status=active` | Equal (default) |\n| `field[ne]` | `?status[ne]=inactive` | Not equal |\n| `field[gt]` | `?price[gt]=100` | Greater than |\n| `field[gte]` | `?date[gte]=2024-05-01` | Greater than or equal |\n| `field[lt]` | `?score[lt]=500` | Less than |\n| `field[lte]` | `?score[lte]=800` | Less than or equal |\n| `field[in]` | `?type[in]=a,b,c` | In list (comma-separated) |\n| `field[like]` | `?name[like]=john` | Partial match |\n\n**Examples**\n- `?price[gte]=100&price[lte]=200`\n- `?name[like]=john`\n- `?status=active`\n\n**Additional helpers**\n- **Pagination**: `page`, `limit` (defaults 1, 10)\n- **Totals**: `includeTotal=true` adds `total` and `totalPages`\n- **Sorting**: `sort=colA,colB`, `order=asc,desc`\n- **Single record**: `only=latest` or `only=oldest` (optional `by=column`, defaults `id`)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workspace_id": {
+                            "type": "integer"
+                          },
+                          "user_id": {
+                            "type": "integer"
+                          },
+                          "role": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/workspace_members/{id}?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve a record by ID from workspace_members",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to retrieve"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "workspace_id": {
+                          "type": "integer"
+                        },
+                        "user_id": {
+                          "type": "integer"
+                        },
+                        "role": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-01-01 00:00:00"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/search/workspace_members?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Search for records in workspace_members",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "role": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved matching records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "workspace_id": {
+                            "type": "integer"
+                          },
+                          "user_id": {
+                            "type": "integer"
+                          },
+                          "role": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/update/workspace_members/{id}?Instance=54182_scraft_crm_database": {
+      "put": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Update a record in workspace_members",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_id": {
+                    "type": "integer"
+                  },
+                  "user_id": {
+                    "type": "integer"
+                  },
+                  "role": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully updated the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/delete/workspace_members/{id}?Instance=54182_scraft_crm_database": {
+      "delete": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Delete a record from workspace_members",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to delete"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/create/workspaces?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Create a new record in workspaces",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "owner_id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully created the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Record created successfully"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "ID of the newly created record"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/workspaces?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve all records from workspaces",
+        "description": "### Filtering and query options\n\nUse query parameters to filter results. Operators use bracket notation:\n\n| Operator | Example | Meaning |\n|---|---|---|\n| `field` | `?status=active` | Equal (default) |\n| `field[ne]` | `?status[ne]=inactive` | Not equal |\n| `field[gt]` | `?price[gt]=100` | Greater than |\n| `field[gte]` | `?date[gte]=2024-05-01` | Greater than or equal |\n| `field[lt]` | `?score[lt]=500` | Less than |\n| `field[lte]` | `?score[lte]=800` | Less than or equal |\n| `field[in]` | `?type[in]=a,b,c` | In list (comma-separated) |\n| `field[like]` | `?name[like]=john` | Partial match |\n\n**Examples**\n- `?price[gte]=100&price[lte]=200`\n- `?name[like]=john`\n- `?status=active`\n\n**Additional helpers**\n- **Pagination**: `page`, `limit` (defaults 1, 10)\n- **Totals**: `includeTotal=true` adds `total` and `totalPages`\n- **Sorting**: `sort=colA,colB`, `order=asc,desc`\n- **Single record**: `only=latest` or `only=oldest` (optional `by=column`, defaults `id`)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "owner_id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/read/workspaces/{id}?Instance=54182_scraft_crm_database": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Retrieve a record by ID from workspaces",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to retrieve"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "owner_id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-01-01 00:00:00"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/search/workspaces?Instance=54182_scraft_crm_database": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Search for records in workspaces",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "owner_id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved matching records",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "owner_id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01 00:00:00"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/update/workspaces/{id}?Instance=54182_scraft_crm_database": {
+      "put": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Update a record in workspaces",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "owner_id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-01-01 00:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully updated the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/delete/workspaces/{id}?Instance=54182_scraft_crm_database": {
+      "delete": {
+        "tags": [
+          "Endpoints"
+        ],
+        "summary": "Delete a record from workspaces",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Instance"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the record to delete"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted the record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Record Not Found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "parameters": {
+      "Instance": {
+        "name": "Instance",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "default": "54182_scraft_crm_database"
+        },
+        "description": "Instance Name"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Endpoints",
+      "description": "Operations related to the API endpoints"
+    },
+    {
+      "name": "Join Endpoints",
+      "description": "Operations related to table joins"
+    }
+  ]
+}

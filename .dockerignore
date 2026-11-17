@@ -1,0 +1,11 @@
+.git
+.gitignore
+node_modules
+dist
+dist-server
+playwright-videos
+videos
+.env
+.env.*
+!.env.example
+*.log
