@@ -1584,3 +1584,102 @@ export const listTasks = (workspaceId: number, scope: 'mine' | 'all', status?: '
 
 export const updateTaskStatus = (workspaceId: number, id: number, status: 'open' | 'done') =>
   authedJson<CrmTask>(`/api/tasks/${id}`, { method: 'PUT', body: { workspace_id: workspaceId, status } });
+
+// ============ BOTS (Salesbot) ============
+export type BotTrigger = AutomationTrigger;
+export const BOT_HANDLER_TYPES = ['show', 'action', 'condition', 'goto', 'wait_answer', 'stop'] as const;
+export type BotHandlerType = (typeof BOT_HANDLER_TYPES)[number];
+export const BOT_ACTION_NAMES = [
+  'move_stage', 'add_tags', 'remove_tags', 'assign_owner', 'create_task',
+  'send_email', 'send_whatsapp', 'send_webhook', 'notify_user',
+] as const;
+export type BotActionName = (typeof BOT_ACTION_NAMES)[number];
+export const BOT_CONDITION_OPERATIONS = ['equals', 'not_equals', 'contains', 'not_contains', 'gt', 'lt', 'is_empty', 'is_not_empty'] as const;
+export type BotConditionOperation = (typeof BOT_CONDITION_OPERATIONS)[number];
+export const BOT_BLOCK_TYPES = ['question', 'answer', 'finish'] as const;
+export type BotBlockType = (typeof BOT_BLOCK_TYPES)[number];
+export const BOT_STOP_ACTIONS = ['talk-close', 'salesbot-start'] as const;
+export const MAX_SCRIPT_BYTES = 65536;
+
+export interface BotHandler {
+  handler: BotHandlerType;
+  params: Record<string, unknown>;
+}
+
+export interface BotStep {
+  question: BotHandler[];
+  answer: BotHandler[];
+  finish: BotHandler[];
+}
+
+export interface Bot {
+  id?: number;
+  workspace_id: number;
+  name: string;
+  pipeline_slug: string;
+  stage: string;
+  trigger_type: BotTrigger;
+  conditions: AutomationConditions;
+  script: BotStep[];
+  active: boolean;
+  sort_order: number;
+}
+
+export interface BotRun {
+  id: number;
+  bot_id: number;
+  entity_type: string;
+  entity_id: number;
+  conversation_id: number;
+  status: 'pending' | 'running' | 'waiting' | 'done' | 'failed' | 'stopped';
+  cursor: string;
+  attempts: number;
+  run_at: string;
+  result: string;
+  error: string;
+  created_at: string;
+}
+
+export const listBots = (workspaceId: number) =>
+  authedJson<Bot[]>(`/api/bots?workspace_id=${workspaceId}`);
+
+export const saveBot = (bot: Bot) =>
+  authedJson<Bot>(bot.id ? `/api/bots/${bot.id}` : '/api/bots', {
+    method: bot.id ? 'PUT' : 'POST',
+    body: { ...bot, id: undefined },
+  });
+
+export const deleteBot = (workspaceId: number, id: number) =>
+  authedJson<{ id: number }>(`/api/bots/${id}?workspace_id=${workspaceId}`, { method: 'DELETE' });
+
+export const runBot = (workspaceId: number, id: number, entityId: number, entityType = 'deal') =>
+  authedJson<{ id: number; bot_id: number; entity_id: number }>(`/api/bots/${id}/run`, {
+    method: 'POST',
+    body: { workspace_id: workspaceId, entity_id: entityId, entity_type: entityType },
+  });
+
+export const listBotRuns = (workspaceId: number, botId?: number) =>
+  authedJson<BotRun[]>(`/api/bots/runs?workspace_id=${workspaceId}${botId ? `&bot_id=${botId}` : ''}`);
+
+/** Client-side mirror of services/bots/schema.ts so the builder can validate before saving. */
+export function validateBotScript(script: BotStep[]): string[] {
+  const errors: string[] = [];
+  const bytes = new TextEncoder().encode(JSON.stringify(script)).length;
+  if (bytes > MAX_SCRIPT_BYTES) errors.push(`Script is ${bytes} bytes, over the ${MAX_SCRIPT_BYTES} byte limit.`);
+  script.forEach((step, index) => {
+    BOT_BLOCK_TYPES.forEach((block) => {
+      step[block].forEach((entry) => {
+        if (entry.handler === 'goto') {
+          const target = Number((entry.params as { step?: unknown }).step);
+          if (!Number.isInteger(target) || target < 0 || target >= script.length) {
+            errors.push(`Step ${index + 1} (${block}): "go to step" must point at an existing step (1–${script.length}).`);
+          }
+        }
+        if (entry.handler === 'action' && !BOT_ACTION_NAMES.includes((entry.params as { action?: BotActionName }).action as BotActionName)) {
+          errors.push(`Step ${index + 1} (${block}): choose an action.`);
+        }
+      });
+    });
+  });
+  return errors;
+}

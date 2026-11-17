@@ -39,7 +39,9 @@ import dealAssociationsRoutes from './routes/dealAssociationsRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import mcpRoutes from './routes/mcpRoutes.js';
 import automationsRoutes, { tasksRouter } from './routes/automationsRoutes.js';
+import botsRoutes from './routes/botsRoutes.js';
 import { startAutomationWorker } from './services/automations/runner.js';
+import { startBotWorker } from './services/bots/runner.js';
 
 const __filename: string = fileURLToPath(import.meta.url);
 const __dirname: string = path.dirname(__filename);
@@ -298,6 +300,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/mcp', mcpRoutes);
 app.use('/api/automations', automationsRoutes);
 app.use('/api/tasks', tasksRouter);
+app.use('/api/bots', botsRoutes);
 
 // ============ DEBUG ROUTES ============
 app.use('/api/debug', debugRoutes);
@@ -435,6 +438,7 @@ const AUTOMATIONS_WORKER_ENABLED = readBooleanEnv(process.env.AUTOMATIONS_WORKER
 
 if (AUTOMATIONS_WORKER_ENABLED) {
   startAutomationWorker(WORKER_INSTANCE_ID, AUTOMATION_POLL_INTERVAL_MS);
+  startBotWorker(`${WORKER_INSTANCE_ID}-bot`, AUTOMATION_POLL_INTERVAL_MS);
 }
 const FACEBOOK_RECONCILIATION_ENABLED =
   readBooleanEnv(process.env.FACEBOOK_RECONCILIATION_ENABLED) ?? true;

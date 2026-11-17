@@ -1001,3 +1001,5 @@ function tableApi(table) {
 export const automationsApi = tableApi('automations');
 export const automationRunsApi = tableApi('automation_runs');
 export const tasksApi = tableApi('tasks');
+export const botsApi = tableApi('bots');
+export const botRunsApi = tableApi('bot_runs');

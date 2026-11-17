@@ -18,6 +18,7 @@ import {
   QuestionMarkCircleIcon,
   BoltIcon,
   ClipboardDocumentCheckIcon,
+  ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
@@ -159,6 +160,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
             { name: 'Tasks', href: '/tasks', icon: ClipboardDocumentCheckIcon },
             { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
             ...(isWorkspaceAdmin ? [{ name: 'Automations', href: '/automations', icon: BoltIcon }] : []),
+            ...(isWorkspaceAdmin ? [{ name: 'Bots', href: '/bots', icon: ChatBubbleLeftRightIcon }] : []),
           ],
         },
         ...(isWorkspaceAdmin

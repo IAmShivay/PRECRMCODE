@@ -10,6 +10,7 @@ import {
   type AutomationRule,
 } from './constants.js';
 import { listWorkspaceRules, nowSql } from './store.js';
+import { maybeLaunchBotsForEvent } from '../bots/engine.js';
 
 let kickRunner: (() => void) | null = null;
 
@@ -54,6 +55,7 @@ async function enqueue(rule: AutomationRule, event: AutomationEvent) {
 /** Fire-and-forget: queues a run for every matching rule. Never throws. */
 export function emitAutomationEvent(event: AutomationEvent): void {
   if (!event.workspaceId || (event.depth || 0) > MAX_CHAIN_DEPTH) return;
+  maybeLaunchBotsForEvent(event);
   void (async () => {
     try {
       const rules = (await listWorkspaceRules(event.workspaceId)).filter((rule) => matches(rule, event));

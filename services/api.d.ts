@@ -214,3 +214,5 @@ export interface TableApi<T = any> {
 export const automationsApi: TableApi;
 export const automationRunsApi: TableApi;
 export const tasksApi: TableApi;
+export const botsApi: TableApi;
+export const botRunsApi: TableApi;
