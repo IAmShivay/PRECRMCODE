@@ -11,7 +11,7 @@
 
 import { z, ZodSchema, ZodError } from 'zod';
 import { Request, Response, NextFunction } from 'express';
-import { DEAL_ASSOCIATION_TYPES, DEFAULT_PIPELINE_SLUG } from '../types/constants.js';
+import { DEAL_ASSOCIATION_TYPES, DEFAULT_PIPELINE_SLUG, PIPELINE_STATUS_TYPES } from '../types/constants.js';
 
 export const workspacePermissionsSchema = z.object({
   deals: z.enum(['none', 'view', 'edit']),
@@ -182,6 +182,7 @@ export const updateDealStagesSchema = z.object({
     name: z.string().trim().min(1).max(80).transform(stripHtmlTags).pipe(z.string().min(1)),
     color: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Invalid stage color'),
     counts_as_conversion: z.boolean(),
+    status_type: z.enum(PIPELINE_STATUS_TYPES).optional(),
   }).strict()).min(1).max(30),
 });
 
@@ -301,6 +302,10 @@ export const bulkImportSchema = z.object({
 
 // ============ DEAL SCHEMAS ============
 
+export const dealTagsSchema = z
+  .array(z.string().trim().min(1).max(50).transform(stripHtmlTags).pipe(z.string().trim().min(1).max(50)))
+  .max(50);
+
 export const createDealSchema = z.object({
   custom_fields: dealFieldValuesSchema.optional(),
   workspace_id: workspaceIdSchema,
@@ -319,6 +324,7 @@ export const createDealSchema = z.object({
   expected_close_date: optionalDateString.nullable(),
   priority: priorityEnum.optional().nullable(),
   lead_id: z.coerce.number().int().positive().optional(),
+  tags: dealTagsSchema.optional(),
 });
 
 export const updateDealSchema = z
@@ -332,6 +338,7 @@ export const updateDealSchema = z
     pipeline_slug: z.string().trim().max(100).optional(),
     expected_close_date: optionalDateString.nullable(),
     priority: priorityEnum.optional().nullable(),
+    tags: dealTagsSchema.optional(),
   })
   .passthrough();
 
@@ -339,6 +346,11 @@ export const createPipelineSchema = z.object({
   workspace_id: workspaceIdSchema,
   name: nameSchema,
 });
+
+export const updatePipelineSchema = z.object({
+  workspace_id: workspaceIdSchema,
+  name: nameSchema,
+}).strict();
 
 export const dealDocumentUploadSchema = z.object({
   name: z.string().trim().min(1).max(200).transform(stripHtmlTags).pipe(z.string().trim().min(1).max(200)),

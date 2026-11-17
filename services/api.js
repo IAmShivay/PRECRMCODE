@@ -885,6 +885,19 @@ export const dealPipelinesApi = {
       body: pipeline,
     });
   },
+
+  async updatePipeline(id, pipeline) {
+    return apiRequest(`/update/lead_webhook_logs/${id}?Instance=54182_scraft_crm_database`, {
+      method: 'PUT',
+      body: pipeline,
+    });
+  },
+
+  async deletePipeline(id) {
+    return apiRequest(`/delete/lead_webhook_logs/${id}?Instance=54182_scraft_crm_database`, {
+      method: 'DELETE',
+    });
+  },
 };
 
 export const dealStageHistoryApi = {

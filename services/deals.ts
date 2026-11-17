@@ -1,11 +1,10 @@
 import crypto from 'crypto';
-import { dealsApi, leadActivitiesApi, webhookLogsApi, workspacesApi } from './api.js';
+import { dealsApi, dealPipelinesApi, leadActivitiesApi, webhookLogsApi, workspacesApi } from './api.js';
 import { parseDealDocuments } from './documents.js';
 import {
   DEAL_PRIORITIES,
   DEAL_PIPELINE_STATUS,
   DEAL_SOURCE,
-  DEAL_STAGE_WON,
   DEAL_STATUS,
   DEFAULT_DEAL_STAGE_SLUG,
   DEFAULT_PIPELINE_SLUG,
@@ -14,6 +13,7 @@ import type { ApiResponse, Deal, DealFieldValues, DealStageConfig, Workspace } f
 import { formatWorkspaceCurrency } from '../utils/currency.js';
 import { formatMySqlDateTimeUtc } from '../lib/validation.js';
 import { emitAutomationEvent } from './automations/engine.js';
+import { isWonStage } from './dealStages.js';
 
 const PRIORITY_SLUGS = new Set<string>(DEAL_PRIORITIES);
 
@@ -109,6 +109,60 @@ export async function listWorkspacePipelines(
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
+export async function findWorkspacePipelineLog(workspaceId: number, slug: string): Promise<any | null> {
+  const response = (await webhookLogsApi.getWebhookLogs({
+    workspace_id: workspaceId,
+    status: DEAL_PIPELINE_STATUS,
+    limit: 10000,
+    bypassCache: true,
+  })) as ApiResponse<any[]>;
+
+  if (response.status !== 'success' || !Array.isArray(response.data)) return null;
+
+  return (
+    response.data.find(
+      (log: any) =>
+        Number(log?.workspace_id) === Number(workspaceId) &&
+        String(log?.status || '') === DEAL_PIPELINE_STATUS &&
+        parsePipelineFromLog(log).slug === slug,
+    ) || null
+  );
+}
+
+export async function renameWorkspacePipeline(
+  workspaceId: number,
+  slug: string,
+  name: string,
+): Promise<{ id: number; slug: string; name: string } | null> {
+  const log = await findWorkspacePipelineLog(workspaceId, slug);
+  if (!log) return null;
+
+  const payload = parseJson(log.payload) || {};
+  const now = formatMySqlDateTimeUtc(new Date());
+  const nextPayload = { ...payload, slug, name, updated_at: now };
+
+  const response = (await dealPipelinesApi.updatePipeline(Number(log.id), {
+    workspace_id: workspaceId,
+    lead_id: 0,
+    source: DEAL_PIPELINE_STATUS,
+    event_id: String(log.event_id || ''),
+    payload: JSON.stringify(nextPayload),
+    status: DEAL_PIPELINE_STATUS,
+  })) as ApiResponse<unknown>;
+
+  if (response.status !== 'success') throw new Error('Failed to rename pipeline');
+  return { id: Number(log.id), slug, name };
+}
+
+export async function deleteWorkspacePipeline(workspaceId: number, slug: string): Promise<boolean> {
+  const log = await findWorkspacePipelineLog(workspaceId, slug);
+  if (!log) return false;
+
+  const response = (await dealPipelinesApi.deletePipeline(Number(log.id))) as ApiResponse<any>;
+  if (response.status !== 'success' && response.status !== 'failed') throw new Error('Failed to delete pipeline');
+  return true;
+}
+
 export interface CreateDealRecordInput {
   workspaceId: number;
   name: string;
@@ -120,6 +174,7 @@ export interface CreateDealRecordInput {
   expectedCloseDate?: string | null;
   priority?: string | null;
   leadId?: number | null;
+  tags?: string[];
   customFields?: DealFieldValues;
   eventId?: string | null;
   stages?: DealStageConfig[];
@@ -160,6 +215,9 @@ export async function createDealRecord(input: CreateDealRecordInput): Promise<Cr
   const countsAsConversion = Array.isArray(input.stages)
     ? input.stages.some((item) => item.slug === stage && item.counts_as_conversion)
     : false;
+  const tags = Array.isArray(input.tags)
+    ? [...new Set(input.tags.map((tag) => String(tag || '').trim()).filter(Boolean))]
+    : [];
 
   const now = formatMySqlDateTimeUtc(new Date());
 
@@ -175,10 +233,10 @@ export async function createDealRecord(input: CreateDealRecordInput): Promise<Cr
     expected_close_date: expectedCloseDate,
     priority,
     lead_id: leadId > 0 ? leadId : undefined,
-    tags: [] as string[],
+    tags,
     created_at: now,
     updated_at: now,
-    won_at: stage === DEAL_STAGE_WON ? now : undefined,
+    won_at: isWonStage(input.stages, stage) ? now : undefined,
     converted_at: countsAsConversion ? now : undefined,
   };
 

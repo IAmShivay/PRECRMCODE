@@ -40,8 +40,18 @@ export const PIPELINES_ALL = 'all';
 export const DEAL_PRIORITIES = ['low', 'medium', 'high'] as const;
 export type DealPriority = typeof DEAL_PRIORITIES[number];
 
-export const PIPELINE_STATUS_TYPES = ['open', 'closed', 'won', 'lost'] as const;
+export const PIPELINE_STATUS_OPEN = 'open';
+export const PIPELINE_STATUS_CLOSED = 'closed';
+export const PIPELINE_STATUS_WON = 'won';
+export const PIPELINE_STATUS_LOST = 'lost';
+export const PIPELINE_STATUS_TYPES = [
+  PIPELINE_STATUS_OPEN,
+  PIPELINE_STATUS_CLOSED,
+  PIPELINE_STATUS_WON,
+  PIPELINE_STATUS_LOST,
+] as const;
 export type PipelineStatusType = typeof PIPELINE_STATUS_TYPES[number];
+export const DEFAULT_PIPELINE_STATUS_TYPE: PipelineStatusType = PIPELINE_STATUS_OPEN;
 
 export const CURRENCIES = ['INR', 'USD', 'AED', 'EUR', 'GBP', 'SGD', 'AUD', 'CAD', 'SAR', 'QAR'] as const;
 export type Currency = typeof CURRENCIES[number];

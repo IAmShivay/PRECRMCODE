@@ -22,14 +22,15 @@ import {
 import type { DealDocument } from '../types/index.js';
 import { dealsApi, dealPipelinesApi, dealStageHistoryApi, leadsApi, webhookLogsApi } from '../services/api.js';
 import { ApiResponse, AuthenticatedRequest, AuthErrorResponse, DealCustomField, DealFieldValues, DealStageConfig } from '../types/index.js';
-import { validate, createDealSchema, updateDealSchema, createPipelineSchema, updateDealStagesSchema, updateDealConfigurationSchema, dealStageSlug } from '../utils/validation.js';
-import { DEAL_PRIORITIES } from '../types/constants.js';
-import { createDealRecord, parseDealFromLog, parseJson, parsePipelineFromLog } from '../services/deals.js';
+import { validate, createDealSchema, updateDealSchema, createPipelineSchema, updatePipelineSchema, updateDealStagesSchema, updateDealConfigurationSchema, dealStageSlug } from '../utils/validation.js';
+import { DEAL_PRIORITIES, DEFAULT_PIPELINE_SLUG } from '../types/constants.js';
+import { createDealRecord, deleteWorkspacePipeline, parseDealFromLog, parseJson, parsePipelineFromLog, renameWorkspacePipeline } from '../services/deals.js';
 import {
   getDealStageConfiguration,
   saveDealStageConfiguration,
   getDealStageConfigurationForPipeline,
   saveDealStageConfigurationForPipeline,
+  isWonStage,
 } from '../services/dealStages.js';
 import { dealFieldErrors } from '../lib/dealFields.js';
 import { emitAutomationEvent } from '../services/automations/engine.js';
@@ -413,6 +414,115 @@ router.post(
   }
 );
 
+router.put(
+  '/pipelines/:slug',
+  authMiddleware,
+  validate(updatePipelineSchema),
+  async (
+    req: AuthenticatedRequest<{ slug: string }, {}, any>,
+    res: Response<ApiResponse<any> | AuthErrorResponse>
+  ): Promise<void> => {
+    try {
+      const userId = Number(req.user?.id || 0);
+      const workspaceId = Number(req.body?.workspace_id);
+      const slug = String(req.params.slug || '').trim();
+
+      if (!Number.isFinite(workspaceId) || workspaceId <= 0) {
+        res.status(400).json({ status: 'error', message: 'workspace_id is required' });
+        return;
+      }
+      if (slug === DEFAULT_PIPELINE_SLUG) {
+        res.status(400).json({ status: 'error', message: 'The default pipeline cannot be renamed' });
+        return;
+      }
+
+      const access = await getWorkspaceAccess(userId, workspaceId);
+      if (!access.hasAccess) {
+        res.status(403).json({ success: false, status: 'error', error: 'Access denied: You do not have access to this workspace' });
+        return;
+      }
+      if (access.role !== 'admin') {
+        res.status(403).json({ status: 'error', message: 'Only workspace admins can manage pipelines' });
+        return;
+      }
+
+      const name = String(req.body?.name || '').trim();
+      if (!name) {
+        res.status(400).json({ status: 'error', message: 'name is required' });
+        return;
+      }
+
+      const renamed = await renameWorkspacePipeline(workspaceId, slug, name);
+      if (!renamed) {
+        res.status(404).json({ status: 'error', message: 'Pipeline not found' });
+        return;
+      }
+
+      res.json({ status: 'success', data: { ...renamed, workspace_id: workspaceId } });
+    } catch (error) {
+      console.error('Error in PUT /api/deals/pipelines/:slug:', error);
+      res.status(500).json({ status: 'error', message: 'Failed to rename pipeline' });
+    }
+  }
+);
+
+router.delete(
+  '/pipelines/:slug',
+  authMiddleware,
+  async (
+    req: AuthenticatedRequest<{ slug: string }>,
+    res: Response<ApiResponse<any> | AuthErrorResponse>
+  ): Promise<void> => {
+    try {
+      const userId = Number(req.user?.id || 0);
+      const workspaceId = Number(req.query.workspace_id);
+      const slug = String(req.params.slug || '').trim();
+
+      if (!Number.isFinite(workspaceId) || workspaceId <= 0) {
+        res.status(400).json({ status: 'error', message: 'workspace_id is required' });
+        return;
+      }
+      if (slug === DEFAULT_PIPELINE_SLUG) {
+        res.status(400).json({ status: 'error', message: 'The default pipeline cannot be deleted' });
+        return;
+      }
+
+      const access = await getWorkspaceAccess(userId, workspaceId);
+      if (!access.hasAccess) {
+        res.status(403).json({ success: false, status: 'error', error: 'Access denied: You do not have access to this workspace' });
+        return;
+      }
+      if (access.role !== 'admin') {
+        res.status(403).json({ status: 'error', message: 'Only workspace admins can manage pipelines' });
+        return;
+      }
+
+      const response = await dealsApi.getDeals({ workspace_id: workspaceId, limit: 10000 }) as ApiResponse<any>;
+      if (response.status !== 'success') throw new Error('Failed to check deals before removing the pipeline');
+      const logs = Array.isArray(response.data) ? response.data : response.data ? [response.data] : [];
+      const dealsInPipeline = logs
+        .filter((log: any) => Number(log.workspace_id) === workspaceId && log.status === 'deal')
+        .map(parseDealFromLog)
+        .filter((deal) => String(deal.pipeline_slug || DEFAULT_PIPELINE_SLUG) === slug);
+      if (dealsInPipeline.length > 0) {
+        res.status(409).json({ status: 'error', message: 'Move or delete the deals in this pipeline before removing it' });
+        return;
+      }
+
+      const deleted = await deleteWorkspacePipeline(workspaceId, slug);
+      if (!deleted) {
+        res.status(404).json({ status: 'error', message: 'Pipeline not found' });
+        return;
+      }
+
+      res.json({ status: 'success', message: 'Pipeline deleted successfully' });
+    } catch (error) {
+      console.error('Error in DELETE /api/deals/pipelines/:slug:', error);
+      res.status(500).json({ status: 'error', message: 'Failed to delete pipeline' });
+    }
+  }
+);
+
 router.post(
   '/',
   authMiddleware,
@@ -531,6 +641,7 @@ router.post(
         expectedCloseDate,
         priority,
         leadId,
+        tags: Array.isArray(req.body?.tags) ? req.body.tags : undefined,
         customFields,
         stages,
         activityUserId: userId,
@@ -647,7 +758,9 @@ router.put(
             ? (req.body.owner_id === null ? null : Number(req.body.owner_id))
             : currentDeal.owner_id,
         stage: nextStage ? nextStage : currentDeal.stage,
-        tags: currentDeal.tags || [],
+        tags: Array.isArray(req.body?.tags)
+          ? [...new Set(req.body.tags.map((tag: unknown) => String(tag || '').trim()).filter(Boolean))]
+          : currentDeal.tags || [],
         pipeline_slug:
           req.body?.pipeline_slug !== undefined
             ? String(req.body.pipeline_slug || 'default').trim() || 'default'
@@ -657,8 +770,8 @@ router.put(
         created_at: currentDeal.created_at || now,
         updated_at: now,
         won_at:
-          (nextStage || currentDeal.stage) === 'won'
-            ? currentDeal.stage === 'won'
+          isWonStage(stages, nextStage || currentDeal.stage)
+            ? isWonStage(stages, currentDeal.stage)
               ? currentDeal.won_at || currentDeal.updated_at || currentDeal.created_at || now
               : now
             : undefined,

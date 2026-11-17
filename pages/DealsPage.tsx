@@ -16,7 +16,7 @@ import DealDocuments from '../components/DealDocuments';
 import DealAssociations from '../components/DealAssociations';
 import DealStageRequirementsModal from '../components/DealStageRequirementsModal';
 import { activeDealFieldValues, dealFieldErrors } from '../lib/dealFields';
-import { readPipelineConfiguration, saveDeal } from '../lib/api-client';
+import { readPipelineConfiguration, saveDeal, renamePipeline, deletePipeline } from '../lib/api-client';
 import type { Deal, DealStage, DealStageConfig, DealCustomField, DealFieldValues } from '../components/types';
 import { ArrowsUpDownIcon, FunnelIcon, PencilSquareIcon, PlusIcon, XMarkIcon, PencilIcon, LinkIcon, EllipsisVerticalIcon, TrashIcon } from '@heroicons/react/24/outline';
 
@@ -394,6 +394,56 @@ function DealCard({
   );
 }
 
+function TagsEditor({ tags, onChange, disabled }: { tags: string[]; onChange: (tags: string[]) => void; disabled?: boolean }) {
+  const [draft, setDraft] = React.useState('');
+
+  const commit = (raw: string) => {
+    const parts = raw.split(',').map((part) => part.trim()).filter(Boolean);
+    if (!parts.length) return;
+    const next = [...tags];
+    for (const part of parts) {
+      if (!next.some((tag) => tag.toLowerCase() === part.toLowerCase())) next.push(part);
+    }
+    onChange(next);
+    setDraft('');
+  };
+
+  return (
+    <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2 py-1.5 min-h-[38px]">
+      {tags.map((tag) => (
+        <span key={tag} className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
+          {tag}
+          {!disabled && (
+            <button type="button" onClick={() => onChange(tags.filter((item) => item !== tag))} aria-label={`Remove tag ${tag}`} className="text-gray-400 hover:text-gray-700">
+              <XMarkIcon className="w-3 h-3" />
+            </button>
+          )}
+        </span>
+      ))}
+      <input
+        value={draft}
+        disabled={disabled}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (value.includes(',')) commit(value);
+          else setDraft(value);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            commit(draft);
+          } else if (e.key === 'Backspace' && !draft && tags.length) {
+            onChange(tags.slice(0, -1));
+          }
+        }}
+        onBlur={() => commit(draft)}
+        placeholder={tags.length ? 'Add tag…' : 'Add tag and press Enter'}
+        className="min-w-[120px] flex-1 border-0 bg-transparent px-1 py-0.5 text-sm text-gray-900 focus:outline-none disabled:bg-transparent"
+      />
+    </div>
+  );
+}
+
 function CreateDealModal({
   workspaceId,
   currency,
@@ -422,6 +472,7 @@ function CreateDealModal({
   const { addToast } = useToast();
   const [submitting, setSubmitting] = React.useState(false);
   const [fieldValues, setFieldValues] = React.useState<DealFieldValues>({});
+  const [tags, setTags] = React.useState<string[]>([]);
   const [form, setForm] = React.useState<{
     name: string;
     value: string;
@@ -443,6 +494,7 @@ function CreateDealModal({
   React.useEffect(() => {
     if (!open) return;
     setFieldValues({});
+    setTags([]);
     setForm({
       name: '',
       value: '',
@@ -485,6 +537,7 @@ function CreateDealModal({
           pipeline_slug: String(pipelineSlug || 'default'),
           expected_close_date: form.expected_close_date ? String(form.expected_close_date).trim() : null,
           priority: form.priority ? String(form.priority).trim() : null,
+          tags,
         });
       if (!created?.id) {
         throw new Error('Invalid create response');
@@ -624,6 +677,10 @@ function CreateDealModal({
                 <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2.5">Custom fields</div>
                 <DealCustomFieldsForm fields={fields} values={fieldValues} stage={form.stage} stageName={stages.find((stage) => stage.slug === form.stage)?.label} onChange={setFieldValues} disabled={submitting} />
               </div>
+              <div className="rounded-xl border border-gray-200 bg-white p-3">
+                <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2.5">Tags</div>
+                <TagsEditor tags={tags} onChange={setTags} disabled={submitting} />
+              </div>
               <div className="rounded-xl border border-dashed border-gray-300 bg-white p-3">
                 <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2.5">Documents</div>
                 <div className="flex flex-col items-center justify-center rounded-lg bg-gray-50 border border-gray-200 px-4 py-6 text-center">
@@ -695,6 +752,7 @@ function EditDealModal({
   const { addToast } = useToast();
   const [submitting, setSubmitting] = React.useState(false);
   const [fieldValues, setFieldValues] = React.useState<DealFieldValues>({});
+  const [tags, setTags] = React.useState<string[]>([]);
   const [deleting, setDeleting] = React.useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const dealIdRef = React.useRef<number | null>(null);
@@ -764,6 +822,7 @@ function EditDealModal({
       }
     }
     setFieldValues(initialFieldValues);
+    setTags(Array.isArray(deal.tags) ? deal.tags : []);
     setForm({
       name: String(deal.name || '').trim(),
       value: String(deal.value || 0),
@@ -807,6 +866,7 @@ function EditDealModal({
           pipeline_slug: String(pipelineSlug || deal.pipeline_slug || 'default'),
           expected_close_date: form.expected_close_date ? String(form.expected_close_date).trim() : null,
           priority: form.priority ? String(form.priority).trim() : null,
+          tags,
         }, deal.id);
       if (!updated?.id) {
         throw new Error('Invalid update response');
@@ -984,6 +1044,10 @@ function EditDealModal({
               <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
                 <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2.5">Custom fields</div>
                 <DealCustomFieldsForm fields={fields} values={fieldValues} stage={form.stage} stageName={stages.find((stage) => stage.slug === form.stage)?.label} onChange={setFieldValues} disabled={submitting || access.permissions.deals !== 'edit'} />
+              </div>
+              <div className="rounded-xl border border-gray-200 bg-white p-3">
+                <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2.5">Tags</div>
+                <TagsEditor tags={tags} onChange={setTags} disabled={submitting || access.permissions.deals !== 'edit'} />
               </div>
               {deal && (
                 <div className="rounded-xl border border-gray-200 bg-white p-3">
