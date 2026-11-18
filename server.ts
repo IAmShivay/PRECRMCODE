@@ -40,6 +40,7 @@ import aiRoutes from './routes/aiRoutes.js';
 import mcpRoutes from './routes/mcpRoutes.js';
 import automationsRoutes, { tasksRouter } from './routes/automationsRoutes.js';
 import botsRoutes from './routes/botsRoutes.js';
+import channelRoutes, { conversationsRouter } from './routes/channelRoutes.js';
 import { startAutomationWorker } from './services/automations/runner.js';
 import { startBotWorker } from './services/bots/runner.js';
 
@@ -162,7 +163,7 @@ logInfo(`[Server] CORS allowedOrigins: ${allowedOrigins.length > 0 ? [...allowed
 const webhookCors = cors({
   origin: '*',
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'X-Workspace-Id', 'X-Webhook-Token', 'X-Idempotency-Key', 'X-Request-Id'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'X-Workspace-Id', 'X-Webhook-Token', 'X-Channel-Token', 'X-Idempotency-Key', 'X-Request-Id'],
   optionsSuccessStatus: 204,
   maxAge: 86400,
 });
@@ -180,14 +181,15 @@ const appCors = cors({
   },
   credentials: true,
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'X-Workspace-Id', 'X-Webhook-Token', 'X-Idempotency-Key', 'X-Request-Id'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'X-Workspace-Id', 'X-Webhook-Token', 'X-Channel-Token', 'X-Idempotency-Key', 'X-Request-Id'],
   exposedHeaders: ['Content-Length', 'X-Total-Count'],
   optionsSuccessStatus: 204,
   maxAge: 86400,
 });
 
+const PUBLIC_CHANNEL_PATH = /^\/api\/channels\/\d+\/(inbound|poll|widget\.js)$/;
 app.use((req, _res, next) => {
-  if (req.path.startsWith('/api/webhook')) {
+  if (req.path.startsWith('/api/webhook') || PUBLIC_CHANNEL_PATH.test(req.path)) {
     return webhookCors(req, _res, next);
   }
   return appCors(req, _res, next);
@@ -301,6 +303,8 @@ app.use('/api/mcp', mcpRoutes);
 app.use('/api/automations', automationsRoutes);
 app.use('/api/tasks', tasksRouter);
 app.use('/api/bots', botsRoutes);
+app.use('/api/channels', channelRoutes);
+app.use('/api/conversations', conversationsRouter);
 
 // ============ DEBUG ROUTES ============
 app.use('/api/debug', debugRoutes);

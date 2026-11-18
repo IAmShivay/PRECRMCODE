@@ -1003,3 +1003,6 @@ export const automationRunsApi = tableApi('automation_runs');
 export const tasksApi = tableApi('tasks');
 export const botsApi = tableApi('bots');
 export const botRunsApi = tableApi('bot_runs');
+export const channelsApi = tableApi('channels');
+export const conversationsApi = tableApi('conversations');
+export const messagesApi = tableApi('messages');

@@ -14,6 +14,11 @@ import {
   type HandlerType,
 } from './constants.js';
 
+export interface OutboundMessage {
+  text: string;
+  payload?: Record<string, unknown>;
+}
+
 export interface BotContext {
   bot: Bot;
   deal: DealSnapshot | null;
@@ -21,6 +26,21 @@ export interface BotContext {
   depth: number;
   vars: Record<string, unknown>;
   state: { deal: DealSnapshot; log: any } | null;
+  conversationId: number;
+  outbox: OutboundMessage[];
+}
+
+const MESSAGE_TEXT_PATTERN = /\{\{\s*message_text\s*\}\}/gi;
+const JSON_VAR_PATTERN = /\{\{\s*json\.([a-z_]+)\s*\}\}/gi;
+
+/** Renders a template, first resolving conversation reply vars ({{message_text}}, {{json.*}}) from the run vars. */
+function renderBot(ctx: BotContext, template: unknown): string {
+  const vars = ctx.vars || {};
+  const json = vars.json && typeof vars.json === 'object' && !Array.isArray(vars.json) ? (vars.json as Record<string, unknown>) : {};
+  const withReply = String(template ?? '')
+    .replace(MESSAGE_TEXT_PATTERN, String(vars.message_text ?? ''))
+    .replace(JSON_VAR_PATTERN, (_match, key: string) => String(json[key] ?? vars[key] ?? ''));
+  return render(withReply, actionContext(ctx, 'notify_user', {}));
 }
 
 export interface HandlerResult {
@@ -75,7 +95,16 @@ function compare(a: string, b: string, operation: ConditionOperation): boolean {
 }
 
 async function show(ctx: BotContext, params: Record<string, any>): Promise<HandlerResult> {
-  const text = render(params.text, actionContext(ctx, 'notify_user', {}));
+  const text = renderBot(ctx, params.text);
+  const buttons = Array.isArray(params.buttons)
+    ? params.buttons.map((button: any) => ({
+        title: renderBot(ctx, button?.title ?? button?.text ?? button),
+        value: String(button?.value ?? button?.title ?? button ?? ''),
+      }))
+    : [];
+  if (ctx.conversationId > 0) {
+    ctx.outbox.push({ text, payload: buttons.length ? { buttons } : {} });
+  }
   return { log: `show: ${text.slice(0, 200)}` };
 }
 
@@ -88,9 +117,8 @@ async function action(ctx: BotContext, params: Record<string, any>): Promise<Han
 }
 
 async function condition(ctx: BotContext, params: Record<string, any>): Promise<HandlerResult> {
-  const renderCtx = actionContext(ctx, 'notify_user', {});
-  const term1 = render(params.term1, renderCtx);
-  const term2 = render(params.term2, renderCtx);
+  const term1 = renderBot(ctx, params.term1);
+  const term2 = renderBot(ctx, params.term2);
   const operation = String(params.operation || 'equals') as ConditionOperation;
   const met = compare(term1, term2, operation);
   const nested = met && Array.isArray(params.result) ? (params.result as Handler[]) : undefined;

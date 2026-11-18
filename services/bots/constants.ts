@@ -44,7 +44,7 @@ export type BotRunStatus = (typeof BOT_RUN_STATUS)[keyof typeof BOT_RUN_STATUS];
 export const BLOCK_TYPES = ['question', 'answer', 'finish'] as const;
 export type BlockType = (typeof BLOCK_TYPES)[number];
 
-export const BOT_ENTITY_TYPES = ['deal'] as const;
+export const BOT_ENTITY_TYPES = ['deal', 'conversation'] as const;
 export type BotEntityType = (typeof BOT_ENTITY_TYPES)[number];
 
 export const STOP_ACTIONS = { CLOSE: 'talk-close', START_BOT: 'salesbot-start' } as const;

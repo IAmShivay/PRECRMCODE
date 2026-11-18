@@ -216,3 +216,6 @@ export const automationRunsApi: TableApi;
 export const tasksApi: TableApi;
 export const botsApi: TableApi;
 export const botRunsApi: TableApi;
+export const channelsApi: TableApi;
+export const conversationsApi: TableApi;
+export const messagesApi: TableApi;

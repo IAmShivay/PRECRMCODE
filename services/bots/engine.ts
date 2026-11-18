@@ -1,4 +1,5 @@
 import { botRunsApi } from '../api.js';
+import { formatMySqlDateTimeUtc } from '../../lib/validation.js';
 import { ANY_STAGE, TRIGGER_EVENTS, type AutomationEvent } from '../automations/constants.js';
 import {
   BOT_ENTITY_TYPES,
@@ -9,12 +10,17 @@ import {
   type BotCursor,
   type BotEntityType,
 } from './constants.js';
-import { createdIdOf, listWorkspaceBots, nowSql } from './store.js';
+import { createdIdOf, listWorkspaceBots, nowSql, parseJsonObject } from './store.js';
 
 let kickRunner: (() => void) | null = null;
 
 export function registerBotRunKicker(fn: () => void) {
   kickRunner = fn;
+}
+
+/** Nudges the worker to process due runs immediately instead of waiting for the next poll. */
+export function kickBotRuns(): void {
+  kickRunner?.();
 }
 
 function matches(bot: Bot, event: AutomationEvent): boolean {
@@ -34,6 +40,7 @@ export async function createBotRun(params: {
   botId: number;
   entityType: BotEntityType;
   entityId: number;
+  conversationId?: number;
   cursor?: BotCursor;
   depth?: number;
 }): Promise<number> {
@@ -43,7 +50,7 @@ export async function createBotRun(params: {
     bot_id: params.botId,
     entity_type: params.entityType,
     entity_id: params.entityId,
-    conversation_id: 0,
+    conversation_id: params.conversationId || 0,
     status: BOT_RUN_STATUS.PENDING,
     cursor: JSON.stringify(params.cursor || startCursor(params.depth || 0)),
     attempts: 0,
@@ -55,6 +62,28 @@ export async function createBotRun(params: {
     updated_at: now,
   });
   return createdIdOf(created);
+}
+
+/**
+ * Resumes a bot run parked by `wait_answer`: injects the client's reply so
+ * `{{message_text}}`/`{{json.message}}` resolve, clears the lock, and re-queues
+ * it so the worker continues from where the cursor parked.
+ */
+export async function resumeBotRun(run: any, replyText: string): Promise<void> {
+  const cursor = parseJsonObject(run.cursor) as Partial<BotCursor>;
+  const vars = cursor.vars && typeof cursor.vars === 'object' ? (cursor.vars as Record<string, unknown>) : {};
+  vars.message_text = replyText;
+  vars.json = { message: replyText };
+  const now = nowSql();
+  await botRunsApi.update(Number(run.id), {
+    status: BOT_RUN_STATUS.PENDING,
+    cursor: JSON.stringify({ block: cursor.block || 'answer', step: Number(cursor.step) || 0, vars }),
+    claim_id: '',
+    run_at: formatMySqlDateTimeUtc(new Date()),
+    error: '',
+    updated_at: now,
+  });
+  kickRunner?.();
 }
 
 /** Fire-and-forget: launches every bot whose trigger matches a deal event. Never throws. */

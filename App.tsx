@@ -42,6 +42,7 @@ const Support = lazy(() => import('./pages/Support'));
 const McpSettingsPage = lazy(() => import('./pages/McpSettingsPage'));
 const AutomationsPage = lazy(() => import('./pages/AutomationsPage'));
 const BotBuilderPage = lazy(() => import('./pages/BotBuilderPage'));
+const ChannelsPage = lazy(() => import('./pages/ChannelsPage'));
 const TasksPage = lazy(() => import('./pages/TasksPage'));
 
 const LandingPage: React.FC = () => {
@@ -139,6 +140,7 @@ const App: React.FC = () => {
             <Route path="/analytics" element={withRouteBoundary(<Analytics />)} />
             <Route path="/automations" element={withRouteBoundary(<AutomationsPage />)} />
             <Route path="/bots" element={withRouteBoundary(<BotBuilderPage />)} />
+            <Route path="/channels" element={withRouteBoundary(<ChannelsPage />)} />
             <Route path="/tasks" element={withRouteBoundary(<TasksPage />)} />
             <Route path="/whatsapp" element={withRouteBoundary(<WhatsAppIntegration />)} />
             <Route path="/instagram" element={withRouteBoundary(<InstagramIntegration />)} />

@@ -74,3 +74,38 @@ export function buildWebhookUrl(
     : ''}`;
   return base ? `${base}${path}` : path;
 }
+
+// Kommo-style attribution placeholders carried by a channel deep link.
+export const VISITOR_UID_REF_PREFIX = 'VisitorUid_';
+export const SESSION_ID_REF_PREFIX = 'ID:%20';
+
+/** Absolute URL of a channel's embeddable live-chat widget script. */
+export function buildWidgetScriptUrl(channelId: string | number): string {
+  const base = getWebhookBaseUrl();
+  const path = `/api/channels/${channelId}/widget.js`;
+  return base ? `${base}${path}` : path;
+}
+
+/** The `<script>` embed snippet a site owner pastes to install the live-chat widget. */
+export function buildWidgetEmbedSnippet(channelId: string | number): string {
+  return `<script src="${buildWidgetScriptUrl(channelId)}" async></script>`;
+}
+
+/**
+ * Builds a messenger deep link that carries the visitor/session attribution the
+ * way Kommo does (`ref=VisitorUid_{{visitor_uid}}` / `ID:%20{{session_id}}`).
+ */
+export function buildChannelDeepLink(
+  type: 'whatsapp' | 'telegram',
+  handle: string,
+  visitorUid: string,
+  sessionId?: string
+): string {
+  const ref = `${VISITOR_UID_REF_PREFIX}${visitorUid}`;
+  const text = sessionId ? `${ref} ${SESSION_ID_REF_PREFIX}${encodeURIComponent(sessionId)}` : ref;
+  const cleanHandle = handle.replace(/^[@+]/, '');
+  if (type === 'telegram') {
+    return `https://t.me/${cleanHandle}?start=${encodeURIComponent(ref)}`;
+  }
+  return `https://wa.me/${cleanHandle}?text=${encodeURIComponent(text)}`;
+}

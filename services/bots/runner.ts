@@ -22,9 +22,11 @@ import {
   type Handler,
   type Step,
 } from './constants.js';
-import { handlers, type BotContext, type HandlerResult } from './handlers.js';
+import { handlers, type BotContext, type HandlerResult, type OutboundMessage } from './handlers.js';
 import { createBotRun, registerBotRunKicker } from './engine.js';
 import { nowSql, parseJsonObject, parseSqlDate, toBot } from './store.js';
+import { MESSAGE_DIRECTION, SENDER_TYPE, type Conversation } from '../channels/constants.js';
+import { appendMessage, loadConversation, updateConversation } from '../channels/store.js';
 
 let running = false;
 let kickAgain = false;
@@ -123,6 +125,26 @@ async function claim(run: any): Promise<any | null> {
   return fresh?.claim_id === claimId ? { ...fresh, claim_id: claimId } : null;
 }
 
+/**
+ * Persists each queued outbound message to the conversation. For the live-chat
+ * widget the stored `messages` row IS the delivery (the widget polls them);
+ * external adapters (WhatsApp/Telegram) would additionally push here.
+ */
+async function deliverOutbound(conversation: Conversation, outbox: OutboundMessage[], botRunId: number): Promise<void> {
+  for (const message of outbox) {
+    await appendMessage({
+      conversation,
+      direction: MESSAGE_DIRECTION.OUT,
+      senderType: SENDER_TYPE.BOT,
+      text: message.text,
+      payload: message.payload || {},
+    }).catch((error) => console.error('[Bots] Could not deliver outbound message', error?.message || error));
+  }
+  if (conversation.bot_run_id !== botRunId) {
+    await updateConversation(conversation.id, { bot_run_id: botRunId }).catch(() => undefined);
+  }
+}
+
 async function execute(run: any) {
   const botRes: any = await botsApi.get(Number(run.bot_id));
   const bot = toBot(Array.isArray(botRes?.data) ? botRes.data[0] : botRes?.data);
@@ -132,24 +154,37 @@ async function execute(run: any) {
   if (!bot.active) return finish(run, BOT_RUN_STATUS.STOPPED, { result: 'Bot is turned off' });
 
   const entityId = Number(run.entity_id) || 0;
-  const loaded = entityId > 0 ? await loadDeal(entityId).catch(() => null) : null;
-  if (entityId > 0 && !loaded) return finish(run, BOT_RUN_STATUS.STOPPED, { result: 'Deal no longer exists' });
+  const conversationId = Number(run.conversation_id) || 0;
+  const isDeal = String(run.entity_type) === BOT_ENTITY_TYPES[0];
+
+  const loaded = isDeal && entityId > 0 ? await loadDeal(entityId).catch(() => null) : null;
+  if (isDeal && entityId > 0 && !loaded) return finish(run, BOT_RUN_STATUS.STOPPED, { result: 'Deal no longer exists' });
+
+  let conversation: Conversation | null = null;
+  if (conversationId > 0) {
+    conversation = await loadConversation(conversationId).catch(() => null);
+    if (!conversation) return finish(run, BOT_RUN_STATUS.STOPPED, { result: 'Conversation no longer exists' });
+  }
+
   const deal = loaded?.deal || null;
-  const lead = await loadLead(Number(deal?.leadId) || 0);
+  const leadId = Number(deal?.leadId) || Number(conversation?.lead_id) || 0;
+  const lead = await loadLead(leadId);
 
   const cursor = parseCursor(run.cursor);
   const depth = Number((cursor.vars as Record<string, unknown>)[DEPTH_VAR]) || 0;
   const state = loaded ? { deal: loaded.deal, log: loaded.log } : null;
-  const ctx: BotContext = { bot, deal, lead, depth, vars: cursor.vars, state };
+  const ctx: BotContext = { bot, deal, lead, depth, vars: cursor.vars, state, conversationId, outbox: [] };
 
   try {
     const outcome = await interpret(ctx, bot.script, cursor);
+    if (conversation) await deliverOutbound(conversation, ctx.outbox, Number(run.id));
     if (outcome.launchBotId && depth < MAX_BOT_DEPTH) {
       await createBotRun({
         workspaceId: bot.workspace_id,
         botId: outcome.launchBotId,
-        entityType: BOT_ENTITY_TYPES[0],
+        entityType: isDeal ? BOT_ENTITY_TYPES[0] : BOT_ENTITY_TYPES[1],
         entityId,
+        conversationId,
         depth: depth + 1,
       }).catch(() => undefined);
     }

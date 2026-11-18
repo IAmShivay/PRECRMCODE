@@ -1661,6 +1661,69 @@ export const runBot = (workspaceId: number, id: number, entityId: number, entity
 export const listBotRuns = (workspaceId: number, botId?: number) =>
   authedJson<BotRun[]>(`/api/bots/runs?workspace_id=${workspaceId}${botId ? `&bot_id=${botId}` : ''}`);
 
+// ============ CHANNELS (conversation runtime) ============
+export const CHANNEL_TYPES = ['live_chat', 'whatsapp', 'telegram'] as const;
+export type ChannelType = (typeof CHANNEL_TYPES)[number];
+export type ConversationStatus = 'open' | 'closed';
+export type MessageDirection = 'in' | 'out';
+export type MessageSenderType = 'client' | 'bot' | 'manager';
+
+export interface Channel {
+  id?: number;
+  workspace_id: number;
+  type: ChannelType;
+  name: string;
+  config: Record<string, unknown>;
+  secret: string;
+  bot_id: number;
+  active: boolean;
+  created_at?: string;
+}
+
+export interface Conversation {
+  id: number;
+  workspace_id: number;
+  channel_id: number;
+  lead_id: number;
+  visitor_uid: string;
+  session_id: string;
+  utm: Record<string, unknown>;
+  status: ConversationStatus;
+  bot_run_id: number;
+  last_message_at?: string;
+  created_at?: string;
+}
+
+export interface ConversationMessage {
+  id: number;
+  workspace_id: number;
+  conversation_id: number;
+  direction: MessageDirection;
+  sender_type: MessageSenderType;
+  text: string;
+  payload: Record<string, unknown>;
+  external_id: string;
+  created_at?: string;
+}
+
+export const listChannels = (workspaceId: number) =>
+  authedJson<Channel[]>(`/api/channels?workspace_id=${workspaceId}`);
+
+export const saveChannel = (channel: Channel) =>
+  authedJson<Channel>(channel.id ? `/api/channels/${channel.id}` : '/api/channels', {
+    method: channel.id ? 'PUT' : 'POST',
+    body: { ...channel, id: undefined },
+  });
+
+export const deleteChannel = (workspaceId: number, id: number) =>
+  authedJson<{ id: number }>(`/api/channels/${id}?workspace_id=${workspaceId}`, { method: 'DELETE' });
+
+export const listChannelConversations = (workspaceId: number, channelId: number) =>
+  authedJson<Conversation[]>(`/api/channels/${channelId}/conversations?workspace_id=${workspaceId}`);
+
+export const listConversationMessages = (workspaceId: number, conversationId: number) =>
+  authedJson<ConversationMessage[]>(`/api/conversations/${conversationId}/messages?workspace_id=${workspaceId}`);
+
 /** Client-side mirror of services/bots/schema.ts so the builder can validate before saving. */
 export function validateBotScript(script: BotStep[]): string[] {
   const errors: string[] = [];
