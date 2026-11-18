@@ -1,6 +1,13 @@
 import crypto from 'crypto';
 import { webhookLogsApi } from './api.js';
 import { ApiResponse, DealStageConfig, StoredDealLog, DealCustomField } from '../types/index.js';
+import {
+  DEFAULT_PIPELINE_STATUS_TYPE,
+  PIPELINE_STATUS_LOST,
+  PIPELINE_STATUS_OPEN,
+  PIPELINE_STATUS_WON,
+  PipelineStatusType,
+} from '../types/constants.js';
 import { dealCustomFieldsSchema } from '../utils/validation.js';
 
 const GLOBAL_STATUS = 'deal_stage_config';
@@ -8,14 +15,23 @@ const GLOBAL_STATUS = 'deal_stage_config';
 const PIPELINE_STATUS = 'pipeline_stages';
 
 export const DEFAULT_DEAL_STAGES: DealStageConfig[] = [
-  { slug: 'new_lead', name: 'New Lead', color: '#111827', counts_as_conversion: false },
-  { slug: 'qualified', name: 'Qualified', color: '#059669', counts_as_conversion: false },
-  { slug: 'in_discussion', name: 'In Discussion', color: '#F59E0B', counts_as_conversion: false },
-  { slug: 'proposal', name: 'Proposal', color: '#4F46E5', counts_as_conversion: false },
-  { slug: 'negotiation', name: 'Negotiation', color: '#9333EA', counts_as_conversion: false },
-  { slug: 'won', name: 'Won', color: '#16A34A', counts_as_conversion: true },
-  { slug: 'lost', name: 'Lost', color: '#E11D48', counts_as_conversion: false },
+  { slug: 'new_lead', name: 'New Lead', color: '#111827', counts_as_conversion: false, status_type: PIPELINE_STATUS_OPEN },
+  { slug: 'qualified', name: 'Qualified', color: '#059669', counts_as_conversion: false, status_type: PIPELINE_STATUS_OPEN },
+  { slug: 'in_discussion', name: 'In Discussion', color: '#F59E0B', counts_as_conversion: false, status_type: PIPELINE_STATUS_OPEN },
+  { slug: 'proposal', name: 'Proposal', color: '#4F46E5', counts_as_conversion: false, status_type: PIPELINE_STATUS_OPEN },
+  { slug: 'negotiation', name: 'Negotiation', color: '#9333EA', counts_as_conversion: false, status_type: PIPELINE_STATUS_OPEN },
+  { slug: 'won', name: 'Won', color: '#16A34A', counts_as_conversion: true, status_type: PIPELINE_STATUS_WON },
+  { slug: 'lost', name: 'Lost', color: '#E11D48', counts_as_conversion: false, status_type: PIPELINE_STATUS_LOST },
 ];
+
+export function stageStatusType(stage: DealStageConfig | undefined): PipelineStatusType {
+  return stage?.status_type ?? DEFAULT_PIPELINE_STATUS_TYPE;
+}
+
+export function isWonStage(stages: DealStageConfig[] | undefined, slug: string): boolean {
+  const stage = Array.isArray(stages) ? stages.find((item) => item.slug === slug) : undefined;
+  return stageStatusType(stage) === PIPELINE_STATUS_WON;
+}
 
 function rows<T>(data: T | T[] | undefined): T[] {
   return Array.isArray(data) ? data : data ? [data] : [];

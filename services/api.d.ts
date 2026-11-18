@@ -188,6 +188,8 @@ export const dealsApi: {
 export const dealPipelinesApi: {
   getPipelines(params?: any): Promise<ApiResponse<any[]>>;
   createPipeline(pipeline: any): Promise<ApiResponse<any>>;
+  updatePipeline(id: number, pipeline: any): Promise<ApiResponse<any>>;
+  deletePipeline(id: number): Promise<ApiResponse<any>>;
 };
 
 export const dealStageHistoryApi: {

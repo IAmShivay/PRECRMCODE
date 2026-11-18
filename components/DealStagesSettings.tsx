@@ -1,7 +1,15 @@
 import React from 'react';
 import { PlusIcon, TrashIcon, Bars3Icon } from '@heroicons/react/24/outline';
 import { readPipelineConfiguration, savePipelineConfiguration, getWorkspaceCustomFields } from '../lib/api-client';
+import { PIPELINE_STATUS_TYPES, PIPELINE_STATUS_OPEN, type PipelineStatusType } from '../types/constants';
 import type { DealStageConfig, DealCustomField, DealFieldType, LeadCustomField } from './types';
+
+const STATUS_TYPE_LABELS: Record<PipelineStatusType, string> = {
+  open: 'Open',
+  closed: 'Closed',
+  won: 'Won',
+  lost: 'Lost',
+};
 
 type Pipeline = { id: number; workspace_id: number; slug: string; name: string };
 
@@ -160,7 +168,7 @@ export default function DealStagesSettings({ workspaceId, canEdit }: { workspace
     let slug = slugBase;
     let suffix = 2;
     while (stages.some((stage) => stage.slug === slug)) slug = `${slugBase}_${suffix++}`;
-    setStages((current) => [...current, { slug, name, color: '#2563EB', counts_as_conversion: false }]);
+    setStages((current) => [...current, { slug, name, color: '#2563EB', counts_as_conversion: false, status_type: PIPELINE_STATUS_OPEN }]);
     setNewName('');
     setSuccess('');
   };
@@ -265,8 +273,8 @@ export default function DealStagesSettings({ workspaceId, canEdit }: { workspace
       {/* ── Stage list ────────────────────────────────────────────────────── */}
       {loading ? <p className="mt-6 text-sm text-gray-500">Loading stages for {selectedPipelineName}…</p> : (
         <div className="mt-5 overflow-hidden rounded-xl border border-gray-200">
-          <div className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
-            <span className="w-5"></span><span>Stage name</span><span>Compulsory properties</span><span>Conversion</span><span className="w-10 text-right">Actions</span>
+          <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-4 bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <span className="w-5"></span><span>Stage name</span><span>Compulsory properties</span><span>Status</span><span>Conversion</span><span className="w-10 text-right">Actions</span>
           </div>
           {stages.map((stage, index) => {
             const isDragging = draggedStageIndex === index;
@@ -308,7 +316,7 @@ export default function DealStagesSettings({ workspaceId, canEdit }: { workspace
                   setDraggedStageIndex(null);
                   setDragOverStageIndex(null);
                 }}
-                className={`grid grid-cols-[auto_1fr_auto_auto_auto] items-center gap-4 px-4 py-3 transition-colors ${
+                className={`grid grid-cols-[auto_1fr_auto_auto_auto_auto] items-center gap-4 px-4 py-3 transition-colors ${
                   isDragging ? 'opacity-50 bg-gray-50' : 'bg-white hover:bg-gray-50'
                 } ${
                   isDropTop ? 'border-t-2 border-t-blue-500 border-b border-b-transparent' : 
@@ -320,7 +328,9 @@ export default function DealStagesSettings({ workspaceId, canEdit }: { workspace
                   <Bars3Icon className="h-5 w-5" />
                 </div>
                 <div className="flex min-w-0 items-center gap-3">
-                  <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: stage.color }} />
+                  <input type="color" aria-label={`Color for ${stage.name}`} value={stage.color} disabled={!canEdit || saving}
+                    onChange={(event) => update(stage.slug, { color: event.target.value })}
+                    className="h-7 w-7 shrink-0 cursor-pointer rounded border border-gray-200 bg-white p-0.5 disabled:cursor-not-allowed disabled:opacity-50" />
                   <input aria-label={`Name for ${stage.name}`} value={stage.name} maxLength={80} disabled={!canEdit || saving}
                     onChange={(event) => update(stage.slug, { name: event.target.value })}
                     className="min-w-0 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none disabled:bg-gray-50" />
@@ -334,6 +344,15 @@ export default function DealStagesSettings({ workspaceId, canEdit }: { workspace
                       </span>
                     );
                   })()}
+                </div>
+                <div className="flex items-center justify-center">
+                  <select aria-label={`Status type for ${stage.name}`} value={stage.status_type ?? PIPELINE_STATUS_OPEN}
+                    disabled={!canEdit || saving} onChange={(event) => update(stage.slug, { status_type: event.target.value as PipelineStatusType })}
+                    className="rounded-lg border border-gray-200 px-2 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none disabled:bg-gray-50">
+                    {PIPELINE_STATUS_TYPES.map((type) => (
+                      <option key={type} value={type}>{STATUS_TYPE_LABELS[type]}</option>
+                    ))}
+                  </select>
                 </div>
                 <label className="flex items-center justify-center gap-2 text-xs text-gray-600">
                   <input type="checkbox" aria-label={`${stage.name} counts as conversion`} checked={stage.counts_as_conversion}

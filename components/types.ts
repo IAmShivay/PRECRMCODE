@@ -170,6 +170,7 @@ export interface DealStageConfig {
   name: string;
   color: string;
   counts_as_conversion: boolean;
+  status_type?: import('../types/constants.js').PipelineStatusType;
 }
 
 export interface DealDocument {
@@ -214,6 +215,7 @@ export interface Deal {
   updated_at?: string;
   won_at?: string;
   converted_at?: string;
+  tags?: string[];
 }
 
 export type { WebFormDealFieldMap, WebFormDealMapping } from '../types/webFormDeals.js';

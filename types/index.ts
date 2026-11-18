@@ -99,6 +99,7 @@ export interface DealStageConfig {
   name: string;
   color: string;
   counts_as_conversion: boolean;
+  status_type?: import('./constants.js').PipelineStatusType;
 }
 
 export interface Prospect {

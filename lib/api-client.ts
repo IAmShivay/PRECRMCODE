@@ -94,6 +94,14 @@ export function getPipelines(workspaceId: number): Promise<any[]> {
   return dealRequest(`/pipelines?workspace_id=${workspaceId}`);
 }
 
+export function renamePipeline(workspaceId: number, slug: string, name: string): Promise<{ id: number; workspace_id: number; slug: string; name: string }> {
+  return dealRequest(`/pipelines/${encodeURIComponent(slug)}`, { method: 'PUT', body: { workspace_id: workspaceId, name } });
+}
+
+export function deletePipeline(workspaceId: number, slug: string): Promise<unknown> {
+  return dealRequest(`/pipelines/${encodeURIComponent(slug)}?workspace_id=${workspaceId}`, { method: 'DELETE' });
+}
+
 export function saveDeal(body: unknown, id?: number): Promise<Deal> {
   return dealRequest(id ? `/${id}` : '', { method: id ? 'PUT' : 'POST', body });
 }

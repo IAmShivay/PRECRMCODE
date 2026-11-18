@@ -16,7 +16,7 @@ import DealDocuments from '../components/DealDocuments';
 import DealAssociations from '../components/DealAssociations';
 import DealStageRequirementsModal from '../components/DealStageRequirementsModal';
 import { activeDealFieldValues, dealFieldErrors } from '../lib/dealFields';
-import { readPipelineConfiguration, saveDeal } from '../lib/api-client';
+import { readPipelineConfiguration, saveDeal, renamePipeline, deletePipeline } from '../lib/api-client';
 import type { Deal, DealStage, DealStageConfig, DealCustomField, DealFieldValues } from '../components/types';
 import { ArrowsUpDownIcon, FunnelIcon, PencilSquareIcon, PlusIcon, XMarkIcon, PencilIcon, LinkIcon, EllipsisVerticalIcon, TrashIcon } from '@heroicons/react/24/outline';
 
@@ -394,6 +394,56 @@ function DealCard({
   );
 }
 
+function TagsEditor({ tags, onChange, disabled }: { tags: string[]; onChange: (tags: string[]) => void; disabled?: boolean }) {
+  const [draft, setDraft] = React.useState('');
+
+  const commit = (raw: string) => {
+    const parts = raw.split(',').map((part) => part.trim()).filter(Boolean);
+    if (!parts.length) return;
+    const next = [...tags];
+    for (const part of parts) {
+      if (!next.some((tag) => tag.toLowerCase() === part.toLowerCase())) next.push(part);
+    }
+    onChange(next);
+    setDraft('');
+  };
+
+  return (
+    <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2 py-1.5 min-h-[38px]">
+      {tags.map((tag) => (
+        <span key={tag} className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
+          {tag}
+          {!disabled && (
+            <button type="button" onClick={() => onChange(tags.filter((item) => item !== tag))} aria-label={`Remove tag ${tag}`} className="text-gray-400 hover:text-gray-700">
+              <XMarkIcon className="w-3 h-3" />
+            </button>
+          )}
+        </span>
+      ))}
+      <input
+        value={draft}
+        disabled={disabled}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (value.includes(',')) commit(value);
+          else setDraft(value);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            commit(draft);
+          } else if (e.key === 'Backspace' && !draft && tags.length) {
+            onChange(tags.slice(0, -1));
+          }
+        }}
+        onBlur={() => commit(draft)}
+        placeholder={tags.length ? 'Add tag…' : 'Add tag and press Enter'}
+        className="min-w-[120px] flex-1 border-0 bg-transparent px-1 py-0.5 text-sm text-gray-900 focus:outline-none disabled:bg-transparent"
+      />
+    </div>
+  );
+}
+
 function CreateDealModal({
   workspaceId,
   currency,
@@ -422,6 +472,7 @@ function CreateDealModal({
   const { addToast } = useToast();
   const [submitting, setSubmitting] = React.useState(false);
   const [fieldValues, setFieldValues] = React.useState<DealFieldValues>({});
+  const [tags, setTags] = React.useState<string[]>([]);
   const [form, setForm] = React.useState<{
     name: string;
     value: string;
@@ -443,6 +494,7 @@ function CreateDealModal({
   React.useEffect(() => {
     if (!open) return;
     setFieldValues({});
+    setTags([]);
     setForm({
       name: '',
       value: '',
@@ -485,6 +537,7 @@ function CreateDealModal({
           pipeline_slug: String(pipelineSlug || 'default'),
           expected_close_date: form.expected_close_date ? String(form.expected_close_date).trim() : null,
           priority: form.priority ? String(form.priority).trim() : null,
+          tags,
         });
       if (!created?.id) {
         throw new Error('Invalid create response');
@@ -624,6 +677,10 @@ function CreateDealModal({
                 <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2.5">Custom fields</div>
                 <DealCustomFieldsForm fields={fields} values={fieldValues} stage={form.stage} stageName={stages.find((stage) => stage.slug === form.stage)?.label} onChange={setFieldValues} disabled={submitting} />
               </div>
+              <div className="rounded-xl border border-gray-200 bg-white p-3">
+                <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2.5">Tags</div>
+                <TagsEditor tags={tags} onChange={setTags} disabled={submitting} />
+              </div>
               <div className="rounded-xl border border-dashed border-gray-300 bg-white p-3">
                 <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2.5">Documents</div>
                 <div className="flex flex-col items-center justify-center rounded-lg bg-gray-50 border border-gray-200 px-4 py-6 text-center">
@@ -695,6 +752,7 @@ function EditDealModal({
   const { addToast } = useToast();
   const [submitting, setSubmitting] = React.useState(false);
   const [fieldValues, setFieldValues] = React.useState<DealFieldValues>({});
+  const [tags, setTags] = React.useState<string[]>([]);
   const [deleting, setDeleting] = React.useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const dealIdRef = React.useRef<number | null>(null);
@@ -764,6 +822,7 @@ function EditDealModal({
       }
     }
     setFieldValues(initialFieldValues);
+    setTags(Array.isArray(deal.tags) ? deal.tags : []);
     setForm({
       name: String(deal.name || '').trim(),
       value: String(deal.value || 0),
@@ -807,6 +866,7 @@ function EditDealModal({
           pipeline_slug: String(pipelineSlug || deal.pipeline_slug || 'default'),
           expected_close_date: form.expected_close_date ? String(form.expected_close_date).trim() : null,
           priority: form.priority ? String(form.priority).trim() : null,
+          tags,
         }, deal.id);
       if (!updated?.id) {
         throw new Error('Invalid update response');
@@ -984,6 +1044,10 @@ function EditDealModal({
               <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
                 <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2.5">Custom fields</div>
                 <DealCustomFieldsForm fields={fields} values={fieldValues} stage={form.stage} stageName={stages.find((stage) => stage.slug === form.stage)?.label} onChange={setFieldValues} disabled={submitting || access.permissions.deals !== 'edit'} />
+              </div>
+              <div className="rounded-xl border border-gray-200 bg-white p-3">
+                <div className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2.5">Tags</div>
+                <TagsEditor tags={tags} onChange={setTags} disabled={submitting || access.permissions.deals !== 'edit'} />
               </div>
               {deal && (
                 <div className="rounded-xl border border-gray-200 bg-white p-3">
@@ -1208,6 +1272,103 @@ function CreatePipelineModal({
   );
 }
 
+function ManagePipelineModal({
+  workspaceId,
+  target,
+  onClose,
+  onRenamed,
+  onDeleted,
+}: {
+  workspaceId: number;
+  target: { mode: 'rename' | 'delete'; slug: string; name: string } | null;
+  onClose: () => void;
+  onRenamed: (slug: string, name: string) => void;
+  onDeleted: (slug: string) => void;
+}) {
+  const { addToast } = useToast();
+  const [submitting, setSubmitting] = React.useState(false);
+  const [name, setName] = React.useState('');
+
+  React.useEffect(() => {
+    if (!target) return;
+    setName(target.name);
+    setSubmitting(false);
+  }, [target]);
+
+  if (!target) return null;
+
+  const isRename = target.mode === 'rename';
+  const canSubmit = !submitting && (!isRename || (name.trim().length > 0 && name.trim() !== target.name));
+
+  const submit = async () => {
+    if (isRename && !canSubmit) return;
+    setSubmitting(true);
+    try {
+      if (isRename) {
+        await renamePipeline(workspaceId, target.slug, name.trim());
+        onRenamed(target.slug, name.trim());
+        addToast('success', 'Pipeline renamed');
+      } else {
+        await deletePipeline(workspaceId, target.slug);
+        onDeleted(target.slug);
+        addToast('success', 'Pipeline deleted');
+      }
+      onClose();
+    } catch (error: any) {
+      addToast('error', error?.message || (isRename ? 'Failed to rename pipeline' : 'Failed to delete pipeline'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative w-full max-w-lg rounded-2xl bg-white border border-gray-200 shadow-xl">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div className="text-sm font-semibold text-gray-900">{isRename ? 'Rename pipeline' : 'Delete pipeline'}</div>
+          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors" aria-label="Close">
+            <XMarkIcon className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="px-6 py-5 space-y-4">
+          {isRename ? (
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1">Pipeline name</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                aria-label="Pipeline name"
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-900 transition"
+                placeholder="e.g. Sales"
+              />
+            </div>
+          ) : (
+            <p className="text-sm text-gray-700">Delete the pipeline <span className="font-semibold">{target.name}</span>? This cannot be undone. A pipeline that still has deals cannot be deleted.</p>
+          )}
+        </div>
+
+        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-2">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition" disabled={submitting}>Cancel</button>
+          <button
+            onClick={submit}
+            className={[
+              'px-4 py-2 rounded-lg text-sm font-medium text-white transition',
+              isRename
+                ? (canSubmit ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-gray-300 cursor-not-allowed')
+                : (submitting ? 'bg-gray-300 cursor-not-allowed' : 'bg-rose-600 hover:bg-rose-500'),
+            ].join(' ')}
+            disabled={isRename ? !canSubmit : submitting}
+          >
+            {isRename ? 'Save' : 'Delete pipeline'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function DealsBoard({ access }: { access: WorkspaceAccess }) {
   const { currentWorkspace, user } = useAuth();
   const { addToast } = useToast();
@@ -1233,6 +1394,7 @@ function DealsBoard({ access }: { access: WorkspaceAccess }) {
   const [pipelinesLoading, setPipelinesLoading] = React.useState(false);
   const [currentPipelineSlug, setCurrentPipelineSlug] = React.useState<string>('default');
   const [createPipelineOpen, setCreatePipelineOpen] = React.useState(false);
+  const [managePipeline, setManagePipeline] = React.useState<{ mode: 'rename' | 'delete'; slug: string; name: string } | null>(null);
   const [filterOpen, setFilterOpen] = React.useState(false);
   const [viewOpen, setViewOpen] = React.useState(false);
   const [sortOpen, setSortOpen] = React.useState(false);
@@ -1763,6 +1925,33 @@ function DealsBoard({ access }: { access: WorkspaceAccess }) {
               ))}
             </select>
 
+            {access.role === 'admin' && currentPipelineSlug !== 'default' && (
+              <>
+                <button
+                  type="button"
+                  aria-label="Rename pipeline"
+                  onClick={() => {
+                    const p = pipelines.find((x) => x.slug === currentPipelineSlug);
+                    if (p) setManagePipeline({ mode: 'rename', slug: p.slug, name: p.name });
+                  }}
+                  className="inline-flex items-center justify-center h-8 w-8 rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition"
+                >
+                  <PencilIcon className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Delete pipeline"
+                  onClick={() => {
+                    const p = pipelines.find((x) => x.slug === currentPipelineSlug);
+                    if (p) setManagePipeline({ mode: 'delete', slug: p.slug, name: p.name });
+                  }}
+                  className="inline-flex items-center justify-center h-8 w-8 rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-rose-50 hover:text-rose-600 transition"
+                >
+                  <TrashIcon className="w-4 h-4" />
+                </button>
+              </>
+            )}
+
             <button
               type="button"
               onClick={() => {
@@ -2017,6 +2206,23 @@ function DealsBoard({ access }: { access: WorkspaceAccess }) {
           setStageConfiguration(null);
           setCurrentPipelineSlug(pipeline.slug);
           setDeals([]);
+        }}
+      />
+
+      <ManagePipelineModal
+        workspaceId={currentWorkspace!.id}
+        target={managePipeline}
+        onClose={() => setManagePipeline(null)}
+        onRenamed={(slug, name) => {
+          setPipelines((prev) => prev.map((p) => (p.slug === slug ? { ...p, name } : p)));
+        }}
+        onDeleted={(slug) => {
+          setPipelines((prev) => prev.filter((p) => p.slug !== slug));
+          if (currentPipelineSlug === slug) {
+            setStageConfiguration(null);
+            setCurrentPipelineSlug('default');
+            setDeals([]);
+          }
         }}
       />
 
