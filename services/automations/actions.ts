@@ -12,6 +12,7 @@ export interface ActionContext {
   deal: DealSnapshot | null;
   lead: any | null;
   depth: number;
+  state?: { deal: DealSnapshot; log: any };
 }
 
 /** Skipped results are recorded but not retried (missing data, not a failure). */
@@ -20,19 +21,20 @@ export class SkipRun extends Error {}
 const VAR_PATTERN = /\{\{\s*([a-z_]+)\.([a-z_]+)\s*\}\}/gi;
 
 function variables(ctx: ActionContext): Record<string, Record<string, unknown>> {
+  const d = ctx.state?.deal ?? ctx.deal;
   return {
     deal: {
-      id: ctx.deal?.id ?? '',
-      name: ctx.deal?.name ?? '',
-      value: ctx.deal?.value ?? '',
-      stage: ctx.deal?.stage ?? '',
-      pipeline: ctx.deal?.pipelineSlug ?? '',
-      tags: ctx.deal?.tags.join(', ') ?? '',
-      contact: ctx.deal?.contact ?? '',
+      id: d?.id ?? '',
+      name: d?.name ?? '',
+      value: d?.value ?? '',
+      stage: d?.stage ?? '',
+      pipeline: d?.pipelineSlug ?? '',
+      tags: d?.tags.join(', ') ?? '',
+      contact: d?.contact ?? '',
     },
     lead: {
       id: ctx.lead?.id ?? '',
-      name: ctx.lead?.name ?? ctx.deal?.contact ?? '',
+      name: ctx.lead?.name ?? d?.contact ?? '',
       email: ctx.lead?.email ?? '',
       phone: ctx.lead?.phone ?? '',
     },
@@ -53,6 +55,7 @@ const listOf = (value: unknown): string[] =>
   Array.isArray(value) ? value.map((item) => String(item || '').trim()).filter(Boolean) : [];
 
 function requireDeal(ctx: ActionContext): DealSnapshot {
+  if (ctx.state?.deal) return ctx.state.deal;
   if (!ctx.deal) throw new SkipRun('This action needs a deal');
   return ctx.deal;
 }
@@ -135,7 +138,7 @@ export async function runAction(ctx: ActionContext): Promise<string> {
       const stage = String(config.stage || '').trim();
       if (!stage) throw new SkipRun('No target stage selected');
       if (stage === deal.stage) return `Already in "${stage}"`;
-      await patchDeal(deal.id, { stage }, ctx.depth);
+      await patchDeal(deal.id, { stage }, ctx.depth, ctx.state);
       return `Moved from "${deal.stage}" to "${stage}"`;
     }
 
@@ -144,7 +147,7 @@ export async function runAction(ctx: ActionContext): Promise<string> {
       const userId = Number(config.user_id);
       if (!userId) throw new SkipRun('No user selected');
       if (userId === deal.ownerId) return 'Already assigned to this user';
-      await patchDeal(deal.id, { owner_id: userId }, ctx.depth);
+      await patchDeal(deal.id, { owner_id: userId }, ctx.depth, ctx.state);
       await notify(ctx, userId, 'Deal assigned to you', `"${deal.name}" was assigned to you by an automation.`);
       return `Assigned to user ${userId}`;
     }
@@ -158,7 +161,7 @@ export async function runAction(ctx: ActionContext): Promise<string> {
         ctx.rule.action_type === 'add_tags'
           ? [...deal.tags, ...tags]
           : deal.tags.filter((tag) => !tags.some((t) => t.toLowerCase() === tag.toLowerCase()));
-      await patchDeal(deal.id, { tags: next }, ctx.depth);
+      await patchDeal(deal.id, { tags: next }, ctx.depth, ctx.state);
       return `${ctx.rule.action_type === 'add_tags' ? 'Added' : 'Removed'} tags: ${tags.join(', ')}`;
     }
 

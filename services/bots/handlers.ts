@@ -20,6 +20,7 @@ export interface BotContext {
   lead: any | null;
   depth: number;
   vars: Record<string, unknown>;
+  state: { deal: DealSnapshot; log: any } | null;
 }
 
 export interface HandlerResult {
@@ -47,7 +48,7 @@ function actionContext(ctx: BotContext, actionType: ActionName, config: Record<s
     sort_order: ctx.bot.sort_order,
     created_by: ctx.bot.created_by,
   };
-  return { rule, deal: ctx.deal, lead: ctx.lead, depth: ctx.depth };
+  return { rule, deal: ctx.deal, lead: ctx.lead, depth: ctx.depth, state: ctx.state || undefined };
 }
 
 function compare(a: string, b: string, operation: ConditionOperation): boolean {

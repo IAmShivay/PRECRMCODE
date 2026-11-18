@@ -132,14 +132,15 @@ async function execute(run: any) {
   if (!bot.active) return finish(run, BOT_RUN_STATUS.STOPPED, { result: 'Bot is turned off' });
 
   const entityId = Number(run.entity_id) || 0;
-  const loaded = entityId > 0 ? await loadDeal(entityId) : null;
+  const loaded = entityId > 0 ? await loadDeal(entityId).catch(() => null) : null;
   if (entityId > 0 && !loaded) return finish(run, BOT_RUN_STATUS.STOPPED, { result: 'Deal no longer exists' });
   const deal = loaded?.deal || null;
   const lead = await loadLead(Number(deal?.leadId) || 0);
 
   const cursor = parseCursor(run.cursor);
   const depth = Number((cursor.vars as Record<string, unknown>)[DEPTH_VAR]) || 0;
-  const ctx: BotContext = { bot, deal, lead, depth, vars: cursor.vars };
+  const state = loaded ? { deal: loaded.deal, log: loaded.log } : null;
+  const ctx: BotContext = { bot, deal, lead, depth, vars: cursor.vars, state };
 
   try {
     const outcome = await interpret(ctx, bot.script, cursor);

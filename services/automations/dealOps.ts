@@ -61,9 +61,10 @@ export async function loadLead(leadId: number): Promise<any | null> {
 export async function patchDeal(
   dealId: number,
   patch: { stage?: string; owner_id?: number | null; tags?: string[] },
-  depth: number
+  depth: number,
+  base?: { deal: DealSnapshot; log: any }
 ): Promise<DealSnapshot> {
-  const loaded = await loadDeal(dealId);
+  const loaded = base ?? (await loadDeal(dealId));
   if (!loaded) throw new Error(`Deal ${dealId} not found`);
   const { deal, log } = loaded;
   const payload = parseJsonObject(log.payload);
@@ -125,5 +126,10 @@ export async function patchDeal(
     });
   }
 
-  return { ...deal, stage: nextStage, ownerId: nextOwner, tags: nextPayload.tags };
+  const updated = { ...deal, stage: nextStage, ownerId: nextOwner, tags: nextPayload.tags };
+  if (base) {
+    base.deal = updated;
+    base.log = { ...log, payload: JSON.stringify(nextPayload) };
+  }
+  return updated;
 }
